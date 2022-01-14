@@ -4,7 +4,7 @@ export default {
 };
 </script>
 <template>
-   <header class="bg-gray-400 flex top-0 p-5 border border-black shadow-lg">
+   <header class="bg-[#2D6991] flex top-0 p-5 shadow-lg">
       <div class="w-12 rounded-full overflow-hidden border border-black">
          <img class="" alt="profilepic" src="../assets/testmoi.jpg" />
       </div>

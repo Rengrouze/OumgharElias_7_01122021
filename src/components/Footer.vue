@@ -4,8 +4,8 @@ export default {
 };
 </script>
 <template>
-   <footer class="fixed bottom-0 w-full bg-gray-400 flex p-5 border border-black shadow-lg">
-      <div class="w-12 rounded-full overflow-hidden border border-black">
+   <footer class="lg:hidden fixed bottom-0 w-full bg-[#091F43] flex p-5 shadow-lg">
+      <div class="w-12 rounded-full overflow-hidden border border-[#2D6991]">
          <img class="" alt="profilepic" src="../assets/testmoi.jpg" />
       </div>
       <div class="flex-auto m-auto">
