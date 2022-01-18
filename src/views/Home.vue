@@ -1,3 +1,5 @@
+<!-- Contains the feed section -->
+
 <template>
    <Header />
    <div class="home">

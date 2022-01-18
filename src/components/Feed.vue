@@ -4,7 +4,7 @@ export default {
 };
 </script>
 <template>
-   <div class="flex bg-[#F5F5F5] h-full">
+   <div class="flex h-full">
       <!-- background -->
       <div>
          <!-- feed section -->
