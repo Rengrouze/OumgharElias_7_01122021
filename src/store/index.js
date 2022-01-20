@@ -2,21 +2,28 @@ import { createStore } from "vuex";
 
 export default createStore({
    state: {
-      user: "Elias",
-      age: 25,
-      isLogged: false,
-   },
-   getters: {
-      getUser(state) {
-         return state.user + " " + state.age + " " + state.isLogged;
+      user: {
+         name: "",
+         userId: null,
+         isLogged: false,
+         isModerator: false,
       },
    },
+   getters: {},
 
    mutations: {
-      INCREMENT_AGE(state) {
-         state.age++;
+      LOGIN(state, userId) {
+         state.user.userId = userId;
+         state.user.isLogged = true;
       },
    },
-   actions: {},
+   actions: {
+      signup({ commit }, user) {
+         commit("LOGIN", "userId");
+      },
+      login(context, email, password) {
+         context.commit("LOGIN", "userId");
+      },
+   },
    modules: {},
 });
