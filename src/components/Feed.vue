@@ -1,33 +1,19 @@
 <template>
-   <div class="flex h-full">
-      <!-- background -->
-      <div>
-         <!-- feed section -->
-
-         <div>
-            <!--feed frame-->
-            <div>
-               Utilisateur connecté "{{ getUser }}" Ut elit deserunt qui aliqua laborum cupidatat deserunt Lorem. Reprehenderit ullamco sit
-               fugiat excepteur occaecat consectetur laborum esse.
-            </div>
-            <button class="bg-slate-300 border-2 border-red-700 rounded-full" @click="incrementAge">Un an de plus</button>
-         </div>
-      </div>
+   <!-- feed section -->
+   <div class="flex h-full w-10/12 mt-12 border-l-2 border-r-2 pr-3 pl-3 flex-col items-center">
+      <!-- social media posts -->
+      <Post />
    </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import Post from "../components/Post.vue";
 
 export default {
    name: "Feed",
-   computed: {
-      ...mapGetters(["getUser"]),
+   components: {
+      Post,
    },
-   methods: {
-      incrementAge() {
-         this.$store.commit("INCREMENT_AGE");
-      },
-   },
+   methods: {},
 };
 </script>

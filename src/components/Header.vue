@@ -1,6 +1,12 @@
 <script>
 export default {
    name: "Header",
+   methods: {
+      logout() {
+         this.$store.dispatch("logout");
+         this.$router.push("/");
+      },
+   },
 };
 </script>
 <template>
@@ -8,6 +14,7 @@ export default {
       <div class="w-20 h-full rounded-full overflow-hidden border-4 border-[#091F43]">
          <router-link to="/"><img class="h-full m-0" alt="profilepic" src="../assets/testmoi.jpg" /></router-link>
       </div>
+      <button @click="logout">log out</button>
       <div class="w-6/12 lg:w-3/12">
          <router-link to="/"><img src="../assets/glogb.svg" /></router-link>
       </div>

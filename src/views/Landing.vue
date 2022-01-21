@@ -3,7 +3,7 @@
 <template>
    <div class="flex flex-col items-center w-4/12 ml-auto mr-auto">
       <div class="flex flex-col items-center mt-40 w-full h-6/12">
-         <div @click="showSignupForm = false" class="h-36">
+         <div class="h-36">
             <img class="h-36" src="/src/assets/icon-above-font.svg" />
          </div>
          <form id="landingForm" class="flex flex-col w-full">
@@ -42,19 +42,32 @@
          <div class="flex flex-row justify-between mt-10 w-full">
             <button
                @click="showSignupForm = true"
+               v-if="showSignupForm == false"
                class="border-2 border-blue-400 rounded w-32 hover:bg-blue-400 hover:text-white transition-all"
-               to="/about"
+               to="/home"
             >
                S'inscrire
             </button>
-            <router-link v-if="showSignupForm == false" class="border-2 border-blue-800 bg-blue-400 text-white rounded w-32" to="/about"
+            <button
+               @click="showSignupForm = false"
+               v-if="showSignupForm == true"
+               class="border-2 border-blue-400 rounded w-32 hover:bg-blue-400 hover:text-white transition-all"
+               to="/home"
+            >
+               Retour
+            </button>
+            <router-link
+               @click="login"
+               v-if="showSignupForm == false"
+               class="border-2 border-blue-800 bg-blue-400 text-white rounded w-32"
+               to="/home"
                >Connexion</router-link
             >
             <button
                v-if="showSignupForm == true"
                @click="signup"
                class="border-2 border-blue-800 bg-blue-400 text-white rounded w-32"
-               to="/about"
+               to="/home"
             >
                Confirmer
             </button>
@@ -67,6 +80,14 @@
 // @ is an alias to /src
 
 export default {
+   // check before created if the user is already logged in
+   beforeRouteEnter(to, from, next) {
+      if (localStorage.getItem("token")) {
+         next("/home");
+      } else {
+         next();
+      }
+   },
    name: "Landing",
    components: {},
    data() {
@@ -121,7 +142,29 @@ export default {
          this.$store.dispatch("signup", this.form);
 
          if (this.$store.state.user.isLogged) {
-            this.$router.push("/about");
+            this.$router.push("/home");
+         } else {
+            this.message = "Une erreur est survenue";
+         }
+      },
+      login() {
+         //check empty form
+         //reset message
+         this.message = "";
+         if (this.form.email == "" || this.form.password == "") {
+            this.message = "Veuillez remplir tous les champs";
+            return;
+         }
+         // check if email is valid
+         if (!this.form.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+            this.message = "Votre email n'est pas valide";
+            return;
+         }
+
+         this.$store.dispatch("login", this.form);
+
+         if (this.$store.state.user.isLogged) {
+            this.$router.push("/home");
          } else {
             this.message = "Une erreur est survenue";
          }
