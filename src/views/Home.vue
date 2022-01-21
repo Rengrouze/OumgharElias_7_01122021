@@ -1,6 +1,6 @@
 <template>
    <Header />
-   <div class="home w-full flex justify-center h-screen">
+   <div class="home w-full flex justify-center h-auto">
       <Feed />
    </div>
 </template>
