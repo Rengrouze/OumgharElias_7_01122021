@@ -8,14 +8,12 @@
       <script src="https://kit.fontawesome.com/53a23bf523.js" crossorigin="anonymous"></script>
    </head>
    <body>
-      <div class="h-screen" id="app">{{ message}}</div>
+      <div class="h-screen" id="app"></div>
       <script type="module" src="/src/main.js"></script>
       <script>
          var app = new Vue({
             el: "#app",
-            data: {
-               message: "Hello Vue!",
-            },
+            data: {},
          });
       </script>
    </body>
