@@ -9,32 +9,44 @@
          <form id="landingForm" class="flex flex-col w-full">
             <div class="flex flex-col">
                <label for="logName">Email</label>
-               <input class="border-2 border-black rounded-sm" type="mail" id="logName" required v-model="form.email" />
+               <input class="w-full h-10 p-2 border-2 border-[#091F43] rounded-xl" type="mail" id="logName" required v-model="form.email" />
             </div>
 
             <div class="flex flex-col w-full">
                <label for="logPass">Mot de passe</label>
-               <input class="border-2 border-black rounded-sm" type="password" id="logPass" required v-model="form.password" />
+               <input
+                  class="w-full h-10 p-2 border-2 border-[#091F43] rounded-xl"
+                  type="password"
+                  id="logPass"
+                  required
+                  v-model="form.password"
+               />
             </div>
 
             <div class="animate-fade opacity-1" v-if="showSignupForm == true">
                <div class="flex flex-col w-full">
                   <label for="logPassConfirm">Confirmer le mot de passe</label>
                   <input
-                     class="border-2 border-black rounded-sm"
+                     class="w-full h-10 p-2 border-2 border-[#091F43] rounded-xl"
                      type="password"
                      id="logPassConfirm"
                      required
-                     v-model="form.passwordConfirm"
+                     v-model="passwordConfirm"
                   />
                </div>
                <div class="flex flex-col w-full">
                   <label for="name">Nom</label>
-                  <input class="border-2 border-black rounded-sm" type="text" id="name" required v-model="form.name" />
+                  <input class="w-full h-10 p-2 border-2 border-[#091F43] rounded-xl" type="text" id="name" required v-model="form.name" />
                </div>
                <div class="flex flex-col w-full">
                   <label for="firstName">Prénom</label>
-                  <input class="border-2 border-black rounded-sm" type="text" id="firstName" required v-model="form.firstName" />
+                  <input
+                     class="w-full h-10 p-2 border-2 border-[#091F43] rounded-xl"
+                     type="text"
+                     id="firstName"
+                     required
+                     v-model="form.surName"
+                  />
                </div>
             </div>
          </form>
@@ -44,7 +56,6 @@
                @click="showSignupForm = true"
                v-if="showSignupForm == false"
                class="border-2 border-blue-400 rounded w-32 hover:bg-blue-400 hover:text-white transition-all"
-               to="/home"
             >
                S'inscrire
             </button>
@@ -52,23 +63,13 @@
                @click="showSignupForm = false"
                v-if="showSignupForm == true"
                class="border-2 border-blue-400 rounded w-32 hover:bg-blue-400 hover:text-white transition-all"
-               to="/home"
             >
                Retour
             </button>
-            <router-link
-               @click="login"
-               v-if="showSignupForm == false"
-               class="border-2 border-blue-800 bg-blue-400 text-white rounded w-32"
-               to="/home"
-               >Connexion</router-link
-            >
-            <button
-               v-if="showSignupForm == true"
-               @click="signup"
-               class="border-2 border-blue-800 bg-blue-400 text-white rounded w-32"
-               to="/home"
-            >
+            <button @click="login" v-if="showSignupForm == false" class="border-2 border-blue-800 bg-blue-400 text-white rounded w-32">
+               Connexion
+            </button>
+            <button v-if="showSignupForm == true" @click="signup" class="border-2 border-blue-800 bg-blue-400 text-white rounded w-32">
                Confirmer
             </button>
          </div>
@@ -82,6 +83,9 @@
 export default {
    // check before created if the user is already logged in
    beforeRouteEnter(to, from, next) {
+      if (localStorage.getItem("user") && !localStorage.getItem("token")) {
+         localStorage.removeItem("user");
+      }
       if (localStorage.getItem("token")) {
          next("/home");
       } else {
@@ -97,10 +101,10 @@ export default {
          form: {
             email: "",
             password: "",
-            passwordConfirm: "",
             name: "",
-            firstName: "",
+            surName: "",
          },
+         passwordConfirm: "",
       };
    },
    methods: {
@@ -113,7 +117,7 @@ export default {
             this.form.password == "" ||
             this.form.passwordConfirm == "" ||
             this.form.name == "" ||
-            this.form.firstName == ""
+            this.form.surName == ""
          ) {
             this.message = "Veuillez remplir tous les champs";
             return;
@@ -124,7 +128,7 @@ export default {
             return;
          }
 
-         if (this.form.password !== this.form.passwordConfirm) {
+         if (this.form.password !== this.passwordConfirm) {
             this.message = "Les mots de passe ne correspondent pas";
             return;
          }
@@ -134,18 +138,57 @@ export default {
             return;
          }
          //check if there is number in name and firstname
-         if (this.form.name.match(/\d/) || this.form.firstName.match(/\d/)) {
+         if (this.form.name.match(/\d/) || this.form.surName.match(/\d/)) {
             this.message = "Votre nom et prénom ne doivent pas contenir de chiffres";
             return;
          }
 
-         this.$store.dispatch("signup", this.form);
+         // call the api
+         (async () => {
+            try {
+               const response = await fetch("http://localhost:3003/api/auth/signup", {
+                  method: "POST",
+                  headers: {
+                     "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(this.form),
+               });
+               const data = await response.json();
+               // if response not okay display error message
+               if (data.error) {
+                  this.message = data.error;
+                  return;
+               } else {
+                  // if response is okay, store the token in local storage
+                  localStorage.setItem("token", data.token);
 
-         if (this.$store.state.user.isLogged) {
-            this.$router.push("/home");
-         } else {
-            this.message = "Une erreur est survenue";
-         }
+                  // if token is undefined, display error message
+                  if (localStorage.getItem("token") == undefined) {
+                     this.message = "Une erreur est survenue";
+                     return;
+                  }
+                  console.log(data);
+                  // store in vuex the user data
+                  this.$store.dispatch("setUser", data);
+                  // does the data in vuex match the data in response ?
+                  console.log(this.$store.state.user);
+                  console.log(data);
+                  if (
+                     this.$store.state.user.userId == "" &&
+                     this.$store.state.user.firstName == "" &&
+                     this.$store.state.user.lastName == ""
+                  ) {
+                     // if yes, redirect to home
+                     this.message = "Une erreur est survenue";
+                     return;
+                  }
+                  this.$router.push("/home");
+               }
+            } catch (error) {
+               console.log(error);
+               alert(error);
+            }
+         })();
       },
       login() {
          //check empty form
@@ -161,13 +204,40 @@ export default {
             return;
          }
 
-         this.$store.dispatch("login", this.form);
-
-         if (this.$store.state.user.isLogged) {
-            this.$router.push("/home");
-         } else {
-            this.message = "Une erreur est survenue";
-         }
+         // call the api
+         (async () => {
+            try {
+               const response = await fetch("http://localhost:3003/api/auth/login", {
+                  method: "POST",
+                  headers: {
+                     "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(this.form),
+               });
+               const data = await response.json();
+               // if response not okay display error message
+               if (data.error) {
+                  this.message = data.error;
+                  return;
+               } else {
+                  // check if the token is in the response
+                  if (data.token) {
+                     // if response is okay, store the token in local storage
+                     localStorage.setItem("token", data.token);
+                     localStorage.setItem("user", JSON.stringify(data.user));
+                     // store in vuex the user data
+                     this.$store.dispatch("setUser", data);
+                     // redirect to home
+                     this.$router.push("/home");
+                  } else {
+                     this.message = "Une erreur est survenue";
+                  }
+               }
+            } catch (error) {
+               console.log(error);
+               alert("Une erreur est survenue");
+            }
+         })();
       },
    },
 };

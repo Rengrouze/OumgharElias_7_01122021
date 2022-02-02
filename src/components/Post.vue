@@ -13,6 +13,7 @@ export default {
    data() {
       return {
          reported: false,
+         supressConfirm: false,
          visible: true,
          seeComments: false,
          oPinfo: {
@@ -33,8 +34,6 @@ export default {
             commentsNumber: "2",
          },
 
-         directLink: false,
-
          newComment: {
             op: "",
             text: "",
@@ -43,12 +42,17 @@ export default {
             time: "",
          },
          errorMessage: "",
+         directLink: false,
          imgFile: "", // image file name
          imgFileShort: "", // image short file name
          newCommentText: "", // new comment text
       };
    },
    methods: {
+      supressPost() {
+         this.visible = false;
+      },
+
       liked() {
          this.content.liked = !this.content.liked;
          if (this.content.liked) {
@@ -63,17 +67,14 @@ export default {
          this.seeComments = !this.seeComments;
       },
       imageWithDirectLink() {
+         this.newComment.mediaurl = "";
          this.directLink = !this.directLink;
          // unload input file
          this.imgFile = "Importer depuis mon pc";
          document.getElementById(this.id + "imageWithFile").value = null;
          document.getElementById(this.id + "imageWithFile").innerHTML = this.imgFile;
-         if (this.directLink == false) {
-            this.newComment.mediaurl = "";
-         }
       },
 
-      getImageWithFileValue() {},
       imageWithFile() {
          if (this.directLink == true) {
             this.directLink = false;
@@ -157,16 +158,37 @@ export default {
                   <p class="text-xs pt-2 text-slate-600">Posté le {{ content.date }} à {{ content.time }}</p>
                </div>
             </div>
-            <div v-if="reported == false" class="group text-2xl relative pr-5">
-               <i class="fas fa-bars transition-opacity duration-300 group-hover:opacity-0 -z-10 absolute"></i>
-               <div
-                  @click="reported = true"
-                  class="opacity-0 transition-opacity duration-300 group-hover:opacity-100 z-10 text-red-600 active:text-red-300 cursor-pointer"
-               >
-                  Signaler
+            <div v-if="this.$store.state.user.mod == 0">
+               <div v-if="reported == false" class="group text-2xl relative pr-5">
+                  <i class="fas fa-bars transition-opacity duration-300 group-hover:opacity-0 -z-10 absolute"></i>
+                  <div
+                     @click="reported = true"
+                     class="opacity-0 transition-opacity duration-300 group-hover:opacity-100 z-10 text-red-600 active:text-red-300 cursor-pointer"
+                  >
+                     Signaler
+                  </div>
                </div>
             </div>
-            <div v-if="reported == true">Vous avez signalé ce post</div>
+            <div v-if="this.$store.state.user.mod == 1 && supressConfirm == false">
+               <div class="group text-2xl relative pr-5">
+                  <i class="fas fa-bars transition-opacity duration-300 group-hover:opacity-0 -z-10 absolute"></i>
+                  <div
+                     @click="supressConfirm = true"
+                     class="opacity-0 transition-opacity duration-300 group-hover:opacity-100 z-10 text-red-600 active:text-red-300 cursor-pointer"
+                  >
+                     Supprimer ?
+                  </div>
+               </div>
+            </div>
+
+            <div v-if="reported == true && this.$store.state.user.mod == 0">Vous avez signalé ce post</div>
+            <div
+               @click="supressPost()"
+               v-if="supressConfirm == true && this.$store.state.user.mod == 1"
+               class="text-red-600 active:text-red-300 cursor-pointer"
+            >
+               Veuillez cliquez à nouveaux pour confirmer la supression
+            </div>
          </div>
          <!-- separator -->
          <div class="h-1 w-11/12 rounded-xl bg-[#2D6991]"></div>
