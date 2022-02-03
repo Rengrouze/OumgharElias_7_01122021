@@ -6,34 +6,34 @@ export default {
       Comment,
    },
    props: {
-      id: {
-         type: String,
-      },
+      visible: Boolean,
+      reported: Boolean,
+
+      name: String,
+      firstName: String,
+      work: String,
+      profilePicUrl: String,
+
+      id: String,
+      text: String,
+      mediaurl: String,
+      date: String,
+      time: String,
+      liked: Boolean,
+      likesNumber: Number,
+      commentsNumber: Number,
    },
+   beforeMount() {
+      if (this.mediaurl == "") {
+         this.noImage = true;
+      }
+   },
+
    data() {
       return {
-         reported: false,
          supressConfirm: false,
-         visible: true,
          seeComments: false,
-         oPinfo: {
-            id: "4564532131",
-            name: "azertazertazertazertazertazertazertazertazertazfin",
-            firstName: "",
-            work: "IT Department",
-            profilePicUrl: "/assets/testmoi.jpg",
-         },
-         content: {
-            id: "5423175264",
-            text: "Quand Je me rappelle que tout ces post sont créé par moi et que je suis seul sur ce site pas fini",
-            mediaurl: "https://c.tenor.com/skrB3dpqD-oAAAAM/waiting-alone-lonely.gif",
-            date: "20/10/2022",
-            time: "16:10",
-            liked: false,
-            likesNumber: "0",
-            commentsNumber: "2",
-         },
-
+         noImage: false,
          newComment: {
             op: "",
             text: "",
@@ -86,76 +86,24 @@ export default {
          this.imgFileShort = this.imgFile.split("\\").pop();
          document.getElementById(this.id + "imageWithFile").innerHTML = this.imgFileShort;
       },
-      postNewComment() {
-         //reset error message
-         this.errorMessage = "";
-         // first of all check empty form
-         if (this.newComment.text == "") {
-            this.errorMessage = "Veuillez remplir le champ de commentaire";
-            return;
-         }
-         // then check if the user has selected an image
-         if (this.imgFile == "" || this.newComment.mediaurl == "") {
-            this.errorMessage = "Veuillez choisir une image";
-            return;
-         }
-         // get the date and time
-         this.newComment.date = new Date().toLocaleDateString();
-         this.newComment.time = new Date().toLocaleTimeString();
-         // don't need the second in time
-         this.newComment.time = this.newComment.time.split(":")[0] + ":" + this.newComment.time.split(":")[1];
-         // get user id with the token
-         this.newComment.op = localStorage.getItem("token");
-
-         // send the new comment to the server
-         (async () => {
-            try {
-               const response = await fetch("/api/post/comment", {
-                  method: "POST",
-                  headers: {
-                     "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify(this.newComment),
-               });
-               const data = await response.json();
-               if (data.success) {
-                  // add the new comment to the list
-                  this.content.commentsNumber++;
-                  this.content.comments.push(this.newComment);
-                  // reset the form
-                  this.newComment.text = "";
-                  this.newComment.mediaurl = "";
-                  this.imgFile = "";
-                  this.imgFileShort = "";
-               } else {
-                  this.errorMessage = data.message;
-               }
-            } catch (error) {
-               console.error(error);
-            }
-         })();
-      },
    },
 };
 </script>
 <template>
    <!-- Example of a Post -->
 
-   <div v-if="visible" :id="content.id" class="flex flex-col w-10/12 lg:w-8/12 justify-center items-center mb-10">
+   <div v-if="visible" :id="id" class="flex flex-col w-10/12 lg:w-8/12 justify-center items-center mb-10">
       <div class="flex flex-col h-auto border-2 w-full shadow-xl rounded-xl justify-center items-center">
          <!-- header section with the profile pic, name, workplace, report button-->
          <div class="flex w-full h-auto p-6 justify-between items-center">
             <!-- Op section -->
             <div class="flex w-3/4 items-center flex-1">
-               <img
-                  src="/src/assets/testmoi.jpg"
-                  class="h-16 w-16 min-w-max rounded-full border-4 border-[#D1515A] overflow-hidden object-cover"
-               />
+               <img :src="profilePicUrl" class="h-16 w-16 rounded-full border-4 border-[#D1515A] overflow-hidden object-cover" />
 
                <div class="flex flex-col items-start ml-4 pt-2 text-ellipsis whitespace-nowrap overflow-hidden">
-                  <p>{{ oPinfo.name + " " + oPinfo.firstName }}</p>
-                  <p><i class="far fa-building"></i> {{ oPinfo.work }}</p>
-                  <p class="text-xs pt-2 text-slate-600">Posté le {{ content.date }} à {{ content.time }}</p>
+                  <p><slot name="op-name"></slot></p>
+                  <p><i class="far fa-building"></i><slot name="op-work"></slot></p>
+                  <p class="text-xs pt-2 text-slate-600"><slot name="timedate"></slot></p>
                </div>
             </div>
             <div v-if="this.$store.state.user.mod == 0">
@@ -195,8 +143,8 @@ export default {
 
          <!-- Content of the post (image/gif/text) -->
          <div class="p-5 w-8/12 h-auto">
-            <p>{{ content.text }}</p>
-            <img :src="content.mediaurl" class="w-full h-auto pt-5 pb-5" />
+            <p><slot name="text"></slot></p>
+            <img v-if="noImage" :src="mediaurl" class="w-full h-auto pt-5 pb-5" />
          </div>
          <!-- separator -->
          <div class="h-1 w-11/12 rounded-xl bg-[#2D6991]"></div>
@@ -207,15 +155,15 @@ export default {
                   <i class="far fa-comment relative top-0 -z-10"></i
                   ><i v-show="addNewComment" class="fas fa-comment absolute top-0 left-0 right-0 bottom-0 z-0"></i>
                </div>
-               <div class="cursor-default">{{ content.commentsNumber }}</div>
+               <div class="cursor-default"><slot name="commentsnumber"></slot></div>
             </div>
             <div class="h-full w-2 border-l-2 border-[#2D6991]"></div>
             <div class="text-[#D1515A] flex flex-row justify-center items-center w-2/4">
                <div @click="liked()" class="flex relative h-4 w-4 mr-1 cursor-pointer">
                   <i class="far fa-heart relative top-0 -z-10"></i
-                  ><i v-show="content.liked" class="fas fa-heart absolute top-0 left-0 right-0 bottom-0 z-0"></i>
+                  ><i v-show="liked" class="fas fa-heart absolute top-0 left-0 right-0 bottom-0 z-0"></i>
                </div>
-               <div class="cursor-default">{{ content.likesNumber }}</div>
+               <div class="cursor-default"><slot name="likesnumber"></slot></div>
             </div>
          </div>
       </div>

@@ -32,7 +32,7 @@ export default {
                <img
                   class="w-20 h-20 object-cover rounded-full overflow-hidden border-4 border-[#2D6991]"
                   alt="profilepic"
-                  :src="mediaurl"
+                  :src="user.mediaurl"
                />
             </template>
             <template v-slot:userFullName> {{ user.firstName + " " + user.lastName }} </template>

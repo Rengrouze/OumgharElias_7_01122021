@@ -10,8 +10,9 @@ export default {
             lastName: "",
             workPlace: "",
             mediaurl: "",
-            mod: false,
+            mod: this.$store.state.user.mod,
          },
+
          errorMessage: "",
          directLink: false,
          imgFile: "", // image file name
@@ -20,13 +21,7 @@ export default {
          secretCode: "",
       };
    },
-   beforeMount() {
-      if ((this.$store.state.user.mod = 1)) {
-         this.userUpdate.mod = true;
-      } else {
-         this.userUpdate.mod = false;
-      }
-   },
+
    methods: {
       imageWithDirectLink() {
          this.userUpdate.mediaurl = "";
@@ -96,6 +91,7 @@ export default {
                   method: "POST",
                   headers: {
                      "Content-Type": "application/json",
+                     Authorization: "Token " + localStorage.getItem("token"),
                   },
 
                   body: JSON.stringify(this.userUpdate),
@@ -109,7 +105,7 @@ export default {
                   this.errorMessage = "Modification prise en compte";
                }
             } catch (error) {
-               this.errorMessage = "test";
+               this.errorMessage = "erreur";
             }
          })();
       },
