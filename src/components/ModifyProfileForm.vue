@@ -78,9 +78,9 @@ export default {
             }
             //
             if (this.secretInput == true && this.secretCode == "Orwell") {
-               this.userUpdate.mod = true;
+               this.userUpdate.mod = 1;
             } else {
-               this.userUpdate.mod = false;
+               this.userUpdate.mod = 0;
             }
          }
 

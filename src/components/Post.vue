@@ -1,7 +1,7 @@
 <script>
-import Comment from "../components/Comment.vue";
+import Comment from "./Comment.vue";
 export default {
-   name: "Post",
+   name: "post",
    components: {
       Comment,
    },
@@ -19,7 +19,7 @@ export default {
       mediaurl: String,
       date: String,
       time: String,
-      liked: Boolean,
+
       likesNumber: Number,
       commentsNumber: Number,
    },
@@ -31,6 +31,7 @@ export default {
 
    data() {
       return {
+         liked: false,
          supressConfirm: false,
          seeComments: false,
          noImage: false,
