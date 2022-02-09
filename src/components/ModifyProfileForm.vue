@@ -11,6 +11,7 @@ export default {
             workPlace: "",
             mediaurl: "",
             mod: this.$store.state.user.mod,
+            file: "",
          },
 
          errorMessage: "",
@@ -38,6 +39,7 @@ export default {
          }
 
          this.imgFile = this.$refs.imgFile.value;
+         this.userUpdate.file = this.$refs.imgFile.files[0];
          // only keep the name of the file
          this.userUpdate.mediaurl = this.imgFile;
          this.imgFileShort = this.imgFile.split("\\").pop();
@@ -87,14 +89,16 @@ export default {
          // send the user data to the server and the file if there is one
          (async () => {
             try {
+               const formData = new FormData();
+               for (const data in this.userUpdate) {
+                  formData.append(data, this.userUpdate[data]);
+               }
                const response = await fetch("http://localhost:3003/api/auth/update", {
                   method: "POST",
                   headers: {
-                     "Content-Type": "application/json",
                      Authorization: "Token " + localStorage.getItem("token"),
                   },
-
-                  body: JSON.stringify(this.userUpdate),
+                  body: formData,
                });
                const data = await response.json();
                if (data.error) {
@@ -169,6 +173,7 @@ export default {
                accept="image/*"
                @change="imageWithFile()"
                ref="imgFile"
+               name="file"
             />
             <input
                v-if="directLink"

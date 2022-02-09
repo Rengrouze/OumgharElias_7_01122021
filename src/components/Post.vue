@@ -145,7 +145,7 @@ export default {
          <!-- Content of the post (image/gif/text) -->
          <div class="p-5 w-8/12 h-auto">
             <p><slot name="text"></slot></p>
-            <img v-if="noImage" :src="mediaurl" class="w-full h-auto pt-5 pb-5" />
+            <img v-if="!noImage" :src="mediaurl" class="w-full h-auto pt-5 pb-5" />
          </div>
          <!-- separator -->
          <div class="h-1 w-11/12 rounded-xl bg-[#2D6991]"></div>

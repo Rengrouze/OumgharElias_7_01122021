@@ -18,7 +18,7 @@
 
 import Header from "../components/Header.vue";
 import NewPost from "../components/NewPost.vue";
-import Post from "../components/Post.vue";
+import post from "../components/Post.vue";
 
 export default {
    beforeRouteEnter(to, from, next) {
@@ -37,7 +37,7 @@ export default {
    name: "Moderation",
    components: {
       Header,
-      Post,
+      post,
       NewPost,
    },
    methods: {},

@@ -122,11 +122,6 @@ export default {
             this.message = "Veuillez remplir tous les champs";
             return;
          }
-         // check weak password (special characters and numbers)
-         if (this.form.password.length < 8) {
-            this.message = "Votre mot de passe est trop faible";
-            return;
-         }
 
          if (this.form.password !== this.passwordConfirm) {
             this.message = "Les mots de passe ne correspondent pas";
@@ -143,53 +138,22 @@ export default {
             return;
          }
 
-         // call the api
-         (async () => {
-            try {
-               const response = await fetch("http://localhost:3003/api/auth/signup", {
-                  method: "POST",
-                  headers: {
-                     "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify(this.form),
-               });
-               const data = await response.json();
-               // if response not okay display error message
-               if (data.error) {
-                  this.message = data.error;
-                  return;
-               } else {
-                  // if response is okay, store the token in local storage
-                  localStorage.setItem("token", data.token);
+         this.$store
+            .dispatch("signup", this.form)
+            .then(() => {
+               this.$router.push("/home");
+            })
+            .catch((error) => {
+               this.message = error.message;
+            });
 
-                  // if token is undefined, display error message
-                  if (localStorage.getItem("token") == undefined) {
-                     this.message = "Une erreur est survenue";
-                     return;
-                  }
-                  console.log(data);
-                  // store in vuex the user data
-                  this.$store.dispatch("setUser", data);
-                  // does the data in vuex match the data in response ?
-                  console.log(this.$store.state.user);
-                  console.log(data);
-                  if (
-                     this.$store.state.user.userId == "" &&
-                     this.$store.state.user.firstName == "" &&
-                     this.$store.state.user.lastName == ""
-                  ) {
-                     // if yes, redirect to home
-                     this.message = "Une erreur est survenue";
-                     return;
-                  }
-                  this.$router.push("/home");
-               }
-            } catch (error) {
-               console.log(error);
-               alert(error);
-            }
-         })();
+         /*localStorage.setItem("token", data.token);
+         this.$store.dispatch("setUser", data.user);
+         this.$router.push("/home");*/
+
+         // if it returns an error, display it
       },
+
       login() {
          //check empty form
          //reset message

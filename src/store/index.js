@@ -1,7 +1,11 @@
 import { createStore } from "vuex";
 
+const apiUrl = "http://localhost:3003/api";
+var Authorization = "token " + localStorage.getItem("token");
+
 export default createStore({
    state: {
+      token: localStorage.getItem("token"),
       user: {
          userId: null,
          firstName: "",
@@ -10,10 +14,14 @@ export default createStore({
          mediaurl: "",
          mod: false,
       },
+      posts: null,
    },
    getters: {},
 
    mutations: {
+      UPDATE_POSTS(state, data) {
+         state.posts = data;
+      },
       SET_USER(state, data) {
          state.user.userId = data.userId;
          state.user.firstName = data.userFirstName;
@@ -64,9 +72,26 @@ export default createStore({
       },
    },
    actions: {
-      setUser({ commit }, data) {
+      async signup({ commit }, form) {
+         const response = await fetch("http://localhost:3003/api/auth/signup", {
+            method: "POST",
+            headers: {
+               "Content-Type": "application/json",
+            },
+            body: JSON.stringify(form),
+         });
+         const data = await response.json();
+         console.log(data);
+         if (response.status !== 201) {
+            throw new Error(data.error);
+         }
+         localStorage.setItem("token", data.token);
+         localStorage.setItem("user", JSON.stringify(data));
          commit("SET_USER", data);
+
+         return data;
       },
+
       deleteUser({ commit }) {
          commit("DELETE_USER");
       },
@@ -75,6 +100,19 @@ export default createStore({
       },
       getUser({ commit }) {
          commit("GET_USER");
+      },
+      async getPosts({ commit }) {
+         // Appel vers API
+         const response = await fetch(`${apiUrl}/posts`, {
+            method: "GET",
+            headers: {
+               "Content-Type": "application/json",
+               Authorization,
+            },
+         });
+         const data = await response.json();
+         commit("UPDATE_POSTS", Object.values(data.posts));
+         return data.posts;
       },
    },
    modules: {},
