@@ -1,6 +1,6 @@
 <script>
 export default {
-   name: "Comment",
+   name: "comment",
    props: {
       idComment: String,
 
