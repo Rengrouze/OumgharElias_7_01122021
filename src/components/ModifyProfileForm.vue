@@ -29,6 +29,7 @@ export default {
          this.directLink = !this.directLink;
          // unload input file
          this.imgFile = "Importer depuis mon pc";
+         this.userUpdate.file = null;
          document.getElementById("imageWithFile").value = null;
          document.getElementById("imageWithFile").innerHTML = this.imgFile;
       },
@@ -86,32 +87,9 @@ export default {
             }
          }
 
-         // send the user data to the server and the file if there is one
-         (async () => {
-            try {
-               const formData = new FormData();
-               for (const data in this.userUpdate) {
-                  formData.append(data, this.userUpdate[data]);
-               }
-               const response = await fetch("http://localhost:3003/api/auth/update", {
-                  method: "POST",
-                  headers: {
-                     Authorization: "Token " + localStorage.getItem("token"),
-                  },
-                  body: formData,
-               });
-               const data = await response.json();
-               if (data.error) {
-                  this.errorMessage = data.error;
-                  console.log(data.error);
-               } else {
-                  this.$store.dispatch("updateUser", data);
-                  this.errorMessage = "Modification prise en compte";
-               }
-            } catch (error) {
-               this.errorMessage = "erreur";
-            }
-         })();
+         this.$store.dispatch("updateUser", this.userUpdate).catch((err) => {
+            this.errorMessage = err.response.data.message;
+         });
       },
    },
 };

@@ -3,6 +3,7 @@ export default {
    name: "Comment",
    props: {
       idComment: String,
+
       visibleComment: {
          type: Boolean,
          default: true,

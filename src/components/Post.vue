@@ -1,27 +1,21 @@
 <script>
 import Comment from "./Comment.vue";
+
+import NewComment from "./NewComment.vue";
 export default {
    name: "post",
    components: {
       Comment,
+      NewComment,
    },
    props: {
-      visible: Boolean,
       reported: Boolean,
 
-      name: String,
-      firstName: String,
-      work: String,
       profilePicUrl: String,
 
       id: String,
-      text: String,
-      mediaurl: String,
-      date: String,
-      time: String,
 
-      likesNumber: Number,
-      commentsNumber: Number,
+      mediaurl: String,
    },
    beforeMount() {
       if (this.mediaurl == "") {
@@ -49,6 +43,12 @@ export default {
          newCommentText: "", // new comment text
       };
    },
+   /*computed: {
+      comments() {
+         return this.$store.state.post.comment;
+      },
+   }, */
+
    methods: {
       supressPost() {
          this.visible = false;
@@ -172,93 +172,31 @@ export default {
          <div
             class="flex flex-col bg-slate-400 h-auto p-2 w-10/12 border-r-2 border-l-2 border-b-2 shadow-xl rounded-b-xl justify-center items-center"
          >
-            <!-- comment section -->
             <div v-if="seeComments == true" class="flex flex-col justify-center items-center w-full h-full">
-               <Comment :visibleComment="true" :reportedComment="false" idComment="1">
-                  <template v-slot:userName>Elias Oumghar</template>
-                  <template v-slot:profilePic
-                     ><img
-                        src="/src/assets/test.jpg"
-                        class="object-cover rounded-full border-2 border-[#091F43] overflow-hidden h-10 w-10 mr-2"
-                  /></template>
-                  <template v-slot:date> 21/12/2012 </template>
-                  <template v-slot:time> 15:30 </template>
-                  <template v-slot:text> je compatis </template>
-                  <template v-slot:media
-                     ><img src="https://c.tenor.com/rRPLWc1ON7cAAAAM/forever-alone-sponge-bob.gif" class="w-60 h-auto pt-5 pb-5"
-                  /></template>
-               </Comment>
-               <Comment :visibleComment="true" :reportedComment="true" idComment="2">
-                  <template v-slot:userName>Elias Oumghar</template>
-                  <template v-slot:profilePic
-                     ><img
-                        src="/src/assets/testmoi.jpg"
-                        class="object-cover rounded-full border-2 border-[#091F43] overflow-hidden h-10 w-10 mr-2"
-                  /></template>
-                  <template v-slot:date> 21/12/2012 </template>
-                  <template v-slot:time> 15:30 </template>
-                  <template v-slot:text> *tousse* </template>
-                  <template v-slot:media
-                     ><img src="https://c.tenor.com/GCpJBUm3YBQAAAAS/umm-confused.gif" class="w-60 h-auto pt-5 pb-5"
-                  /></template>
-               </Comment>
-               <!-- add a new comment -->
-               <div
-                  class="flex flex-col p-2 border border-gray-300 rounded-xl bg-gray-50 shadow-xl mb-2 w-full justify-center items-center"
+               <!-- comment section  -->
+
+               <!--      <comment
+                  v-for="comment in comments"
+                  :key="comment.id"
+                  :visibleComment="comment.enable"
+                  :reportedComment="false"
+                  :id="'comment' + comment.id"
+                  :idComment="comment.id"
                >
-                  <label for="NewComment" class="text-gray-700 text-sm">Ajouter un commentaire</label>
-                  <input
-                     type="text"
-                     id="NewComment"
-                     v-model="newComment.text"
-                     class="w-full h-10 p-2 border-2 border-[#091F43] rounded-xl"
-                     placeholder="Votre commentaire ici"
-                  />
-                  <div class="flex flex-col w-full justify-center items-center">
-                     <p class="mt-4"><i class="far fa-smile"></i> Vous voulez ajoutez une image ou un gif ?</p>
-                     <div class="flex flex-row justify-evenly w-full">
-                        <button
-                           @click="imageWithDirectLink()"
-                           class="mt-4 mb-2 border-2 border-[#2D6991] bg-[#2D6991] rounded-lg text-sky-50 p-1 cursor-pointer"
-                        >
-                           Avec un lien Direct
-                        </button>
-                        <label
-                           for="file"
-                           class="mt-4 mb-2 border-2 border-[#2D6991] bg-[#2D6991] rounded-lg text-sky-50 font-normal p-1 cursor-pointer"
-                           :id="id + 'imageWithFile'"
-                        >
-                           Importer depuis mon pc</label
-                        >
-                     </div>
-                     <div class="w-full">
-                        <input
-                           type="file"
-                           id="file"
-                           class="inputfile opacity-0 w-0 h-0 absolute"
-                           accept="image/*"
-                           @change="imageWithFile()"
-                           ref="imgFile"
-                        />
-                        <input
-                           v-if="directLink"
-                           type="url "
-                           class="w-full h-10 p-2 border-2 border-[#091F43] rounded-xl"
-                           placeholder="Exemple : https://c.tenor.com/x8eBbUiF4RYAAAAS/yes-sweet.gif "
-                           v-model="newComment.mediaurl"
-                        />
-                     </div>
-                  </div>
-                  <p class="text-red-500 text-xs italic">
-                     {{ errorMessage }}
-                  </p>
-                  <button
-                     @click="postNewComment()"
-                     class="mt-4 mb-2 border-2 border-[#2D6991] bg-[#2D6991] rounded-lg text-sky-50 p-1 font-bold cursor-pointer"
-                  >
-                     Envoyer
-                  </button>
-               </div>
+                  <template v-slot:userName>{{ comment.user.name + " " + comment.user.surname }}</template>
+                  <template v-slot:profilePic
+                     ><img
+                        :src="comment.user.profilepicurl"
+                        class="object-cover rounded-full border-2 border-[#091F43] overflow-hidden h-10 w-10 mr-2"
+                  /></template>
+                  <template v-slot:date>{{ comment.date }}</template>
+                  <template v-slot:time>{{ comment.time }}</template>
+                  <template v-slot:text>{{ comment.text }}</template>
+                  <template v-slot:media><img :src="comment.mediaurl" class="w-60 h-auto pt-5 pb-5" /></template>
+               </comment> -->
+
+               <NewComment :postId="id"> </NewComment>
+
                <!-- display comments section -->
             </div>
             <div class="flex flex-col justify-center">

@@ -146,12 +146,6 @@ export default {
             .catch((error) => {
                this.message = error.message;
             });
-
-         /*localStorage.setItem("token", data.token);
-         this.$store.dispatch("setUser", data.user);
-         this.$router.push("/home");*/
-
-         // if it returns an error, display it
       },
 
       login() {
@@ -169,39 +163,14 @@ export default {
          }
 
          // call the api
-         (async () => {
-            try {
-               const response = await fetch("http://localhost:3003/api/auth/login", {
-                  method: "POST",
-                  headers: {
-                     "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify(this.form),
-               });
-               const data = await response.json();
-               // if response not okay display error message
-               if (data.error) {
-                  this.message = data.error;
-                  return;
-               } else {
-                  // check if the token is in the response
-                  if (data.token) {
-                     // if response is okay, store the token in local storage
-                     localStorage.setItem("token", data.token);
-                     localStorage.setItem("user", JSON.stringify(data.user));
-                     // store in vuex the user data
-                     this.$store.dispatch("setUser", data);
-                     // redirect to home
-                     this.$router.push("/home");
-                  } else {
-                     this.message = "Une erreur est survenue";
-                  }
-               }
-            } catch (error) {
-               console.log(error);
-               alert("Une erreur est survenue");
-            }
-         })();
+         this.$store
+            .dispatch("login", this.form)
+            .then(() => {
+               this.$router.push("/home");
+            })
+            .catch((error) => {
+               this.message = error.message;
+            });
       },
    },
 };

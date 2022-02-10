@@ -1,10 +1,17 @@
 <script>
 export default {
-   name: "NewPost",
+   name: "newcomment",
+   props: {
+      postId: {
+         type: Number,
+         required: true,
+      },
+   },
+
    data() {
       return {
-         display: false,
-         newPost: {
+         newComment: {
+            post: this.postId,
             op: this.$store.state.user.userId,
             text: "",
             mediaurl: "",
@@ -12,7 +19,7 @@ export default {
          },
          noImage: true,
          preview: "",
-         errorMessage: "",
+         message: "",
          directLink: false,
          imgFile: "", // image file name
          imgFileShort: "Importer depuis mon pc", // image short file name
@@ -24,12 +31,13 @@ export default {
          this.display = !this.display;
       },
       imageWithDirectLink() {
-         this.newPost.mediaurl = "";
+         this.newComment.mediaurl = "";
          this.directLink = !this.directLink;
          // unload input file
          this.imgFile = "Importer depuis mon pc";
-         document.getElementById(newPost).value = null;
-         document.getElementById(newPost).innerHTML = this.imgFile;
+         document.getElementById(this.postId + "imageWithFile").value = null;
+         document.getElementById(this.postId + "imageWithFile").innerHTML = this.imgFile;
+         this.newComment.file = null;
       },
 
       imageWithFile() {
@@ -41,64 +49,42 @@ export default {
          // only keep the name of the file
 
          this.imgFileShort = this.imgFile.split("\\").pop();
-         this.newPost.file = this.$refs.imgFile.files[0];
-         document.getElementById(newPost).innerHTML = this.imgFileShort;
+         this.newComment.file = this.$refs.imgFile.files[0];
+         document.getElementById(this.postId + "imageWithFile").innerHTML = this.imgFileShort;
       },
-      createNewPost() {
+      postNewComment() {
          // clear error message
-         this.errorMessage = "";
+         this.message = "";
          // check empty form
-         if (this.newPost.text == "") {
-            this.errorMessage = "Vous ne pouvez pas poster un message vide";
+         if (this.newComment.text == "") {
+            this.message = "Vous ne pouvez pas poster un message vide";
             return;
          }
+
          this.$store
-            .dispatch("createPost", this.newPost)
+            .dispatch("createComment", this.newComment)
             .then(() => {
-               this.newPost.text = "";
-               this.newPost.mediaurl = "";
-               this.newPost.file = "";
+               this.newComment.text = "";
+               this.newComment.mediaurl = "";
+               this.newComment.file = "";
                this.display = false;
             })
             .catch((error) => {
-               this.errorMessage = error.message;
-            });
-         this.$store
-            .dispatch("clearPosts") // clear posts
-            .then(() => {
-               this.$store.dispatch("getPosts");
-            })
-            .catch((error) => {
-               this.errorMessage = error.message;
+               this.message = error.message;
             });
       },
    },
 };
 </script>
 <template>
-   <div
-      v-if="!display"
-      @click="displayForm()"
-      class="flex justify-center items-center border-2 w-11 rounded-full mb-5 h-11 text-3xl cursor-pointer"
-   >
-      +
-   </div>
-   <div
-      v-if="display"
-      @click="displayForm()"
-      class="flex justify-center items-center border-2 w-11 rounded-full mb-5 h-11 text-3xl cursor-pointer"
-   >
-      -
-   </div>
-
-   <div v-if="display" class="flex flex-col p-2 border-2 rounded-xl bg-gray-50 shadow-xl mb-2 w-8/12 justify-center items-center mb-10">
-      <label for="NewPost" class="text-gray-700 text-sm">Ajouter un post</label>
+   <div class="flex flex-col p-2 border border-gray-300 rounded-xl bg-gray-50 shadow-xl mb-2 w-full justify-center items-center">
+      <label for="NewComment" class="text-gray-700 text-sm">Ajouter un commentaire</label>
       <input
          type="text"
-         v-model="newPost.text"
-         id="NewPost"
+         id="NewComment"
+         v-model="newComment.text"
          class="w-full h-10 p-2 border-2 border-[#091F43] rounded-xl"
-         placeholder="Votre post ici"
+         placeholder="Votre commentaire ici"
       />
       <div class="flex flex-col w-full justify-center items-center">
          <p class="mt-4"><i class="far fa-smile"></i> Vous voulez ajoutez une image ou un gif ?</p>
@@ -112,36 +98,35 @@ export default {
             <label
                for="file"
                class="mt-4 mb-2 border-2 border-[#2D6991] bg-[#2D6991] rounded-lg text-sky-50 font-normal p-1 cursor-pointer"
-               id="newPost"
+               :id="postId + 'imageWithFile'"
             >
-               {{ imgFileShort }}</label
+               Importer depuis mon pc</label
             >
          </div>
          <div class="w-full">
             <input
-               @change="imageWithFile()"
                type="file"
                id="file"
+               name="file"
                class="inputfile opacity-0 w-0 h-0 absolute"
                accept="image/*"
+               @change="imageWithFile()"
                ref="imgFile"
-               name="file"
             />
             <input
                v-if="directLink"
-               v-model="newPost.mediaurl"
-               type="url"
+               type="url "
                class="w-full h-10 p-2 border-2 border-[#091F43] rounded-xl"
                placeholder="Exemple : https://c.tenor.com/x8eBbUiF4RYAAAAS/yes-sweet.gif "
+               v-model="newComment.mediaurl"
             />
          </div>
       </div>
-
       <p class="text-red-500 text-xs italic">
-         {{ errorMessage }}
+         {{ message }}
       </p>
       <button
-         @click="createNewPost()"
+         @click="postNewComment()"
          class="mt-4 mb-2 border-2 border-[#2D6991] bg-[#2D6991] rounded-lg text-sky-50 p-1 font-bold cursor-pointer"
       >
          Envoyer

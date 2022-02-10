@@ -22,6 +22,9 @@ export default createStore({
       UPDATE_POSTS(state, data) {
          state.posts = data;
       },
+      CLEAR_POSTS(state) {
+         state.posts = null;
+      },
       SET_USER(state, data) {
          state.user.userId = data.userId;
          state.user.firstName = data.userFirstName;
@@ -91,13 +94,53 @@ export default createStore({
 
          return data;
       },
+      async login({ commit }, form) {
+         const response = await fetch("http://localhost:3003/api/auth/login", {
+            method: "POST",
+            headers: {
+               "Content-Type": "application/json",
+            },
+            body: JSON.stringify(form),
+         });
+         const data = await response.json();
+         console.log(data);
+         if (response.status !== 200) {
+            throw new Error(data.error);
+         }
+         localStorage.setItem("token", data.token);
+         localStorage.setItem("user", JSON.stringify(data));
+         commit("SET_USER", data);
+         return data;
+      },
+      async updateUser({ commit }, form) {
+         console.log("connard");
+         const formData = new FormData();
+         for (const data in form) {
+            formData.append(data, form[data]);
+         }
+         const response = await fetch("http://localhost:3003/api/auth/update", {
+            method: "PUT",
+            headers: {
+               Authorization,
+            },
+            body: formData,
+         });
+         console.log(formData);
+         const data = await response.json();
+         console.log("connard");
+         if (response.status !== 201) {
+            throw new Error(data.error);
+         } else {
+            localStorage.setItem("user", JSON.stringify(data));
+            commit("UPDATE_USER", data);
+            return data;
+         }
+      },
 
       deleteUser({ commit }) {
          commit("DELETE_USER");
       },
-      updateUser({ commit }, data) {
-         commit("UPDATE_USER", data);
-      },
+
       getUser({ commit }) {
          commit("GET_USER");
       },
@@ -113,6 +156,46 @@ export default createStore({
          const data = await response.json();
          commit("UPDATE_POSTS", Object.values(data.posts));
          return data.posts;
+      },
+      async createPost({ commit }, form) {
+         const formData = new FormData();
+         for (const data in form) {
+            formData.append(data, form[data]);
+         }
+         const response = await fetch("http://localhost:3003/api/posts/newpost", {
+            method: "POST",
+            headers: {
+               Authorization,
+            },
+            body: formData,
+         });
+         const data = await response.json();
+         if (response.status !== 201) {
+            throw new Error(data.error);
+         }
+
+         return data;
+      },
+      clearPosts({ commit }) {
+         commit("CLEAR_POSTS");
+      },
+      createComment({ commit }, form) {
+         const formData = new FormData();
+         for (const data in form) {
+            formData.append(data, form[data]);
+         }
+         const response = fetch("http://localhost:3003/api/posts/newcomment", {
+            method: "POST",
+            headers: {
+               Authorization,
+            },
+            body: formData,
+         });
+         const data = response.json();
+         if (response.status !== 201) {
+            throw new Error(data);
+         }
+         return data;
       },
    },
    modules: {},
