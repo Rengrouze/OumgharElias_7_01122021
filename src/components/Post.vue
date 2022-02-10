@@ -14,18 +14,9 @@ export default {
       id: String,
       mediaurl: String,
    },
-   beforeMount() {
-      if (this.mediaurl == "") {
-         this.noImage = true;
-      }
-   },
-   computed: {
-      specifiedPost() {
-         return this.$store.state.posts.filter((post) => post.id == this.id);
-      },
-   },
    data() {
       return {
+         comments: null,
          liked: false,
          supressConfirm: false,
          seeComments: false,
@@ -37,13 +28,46 @@ export default {
             date: "",
             time: "",
          },
+         isOp: false,
          errorMessage: "",
          directLink: false,
          imgFile: "", // image file name
          imgFileShort: "", // image short file name
          newCommentText: "", // new comment text
+         likeChecker: {
+            postId: this.id,
+            userId: this.$store.state.user.userId,
+         },
       };
    },
+   beforeMount() {
+      if (this.mediaurl == "") {
+         this.noImage = true;
+      }
+   },
+   computed: {
+      specifiedPost() {
+         return this.$store.state.posts.filter((post) => post.id == this.id);
+      },
+   },
+   created() {
+      this.comments = this.specifiedPost[0].comment;
+      if (this.specifiedPost[0].op == this.$store.state.user.userId) {
+         this.isOp = true;
+      } else {
+         this.isOp = false;
+      }
+
+      //check if the user has already liked the post
+      this.$store.dispatch("checkLike", this.likeChecker).then((res) => {
+         if ((res = true)) {
+            this.liked = true;
+         } else {
+            this.liked = false;
+         }
+      });
+   },
+
    methods: {
       supressPost() {
          this.visible = false;
@@ -125,10 +149,10 @@ export default {
                </div>
             </div>
 
-            <div v-if="reported == true && this.$store.state.user.mod == 0">Vous avez signalé ce post</div>
+            <div v-if="reported == true && !this.$store.state.user.mod">Vous avez signalé ce post</div>
             <div
                @click="supressPost()"
-               v-if="supressConfirm == true && this.$store.state.user.mod == 1"
+               v-if="supressConfirm == true && this.$store.state.user.mod"
                class="text-red-600 active:text-red-300 cursor-pointer"
             >
                Veuillez cliquez à nouveaux pour confirmer la supression
@@ -170,7 +194,7 @@ export default {
             <!-- comment section -->
             <div v-if="seeComments == true" class="flex flex-col justify-center items-center w-full h-full">
                <comment
-                  v-for="comment in specifiedPost.comment"
+                  v-for="comment of comments"
                   :key="comment.id"
                   :visibleComment="comment.enable"
                   :reportedComment="false"
@@ -187,20 +211,6 @@ export default {
                   <template v-slot:time>{{ comment.time }}</template>
                   <template v-slot:text>{{ comment.text }}</template>
                   <template v-slot:media><img :src="comment.mediaurl" class="w-60 h-auto pt-5 pb-5" /></template>
-               </comment>
-               <comment :visibleComment="true" :reportedComment="false" idComment="1">
-                  <template v-slot:userName>Elias Oumghar</template>
-                  <template v-slot:profilePic
-                     ><img
-                        src="/src/assets/logo.png"
-                        class="object-cover rounded-full border-2 border-[#091F43] overflow-hidden h-10 w-10 mr-2"
-                  /></template>
-                  <template v-slot:date> 21/12/2012 </template>
-                  <template v-slot:time> 15:30 </template>
-                  <template v-slot:text> je compatis </template>
-                  <template v-slot:media
-                     ><img src="https://c.tenor.com/rRPLWc1ON7cAAAAM/forever-alone-sponge-bob.gif" class="w-60 h-auto pt-5 pb-5"
-                  /></template>
                </comment>
 
                <!-- add a new comment -->

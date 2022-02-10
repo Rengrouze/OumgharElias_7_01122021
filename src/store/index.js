@@ -95,7 +95,7 @@ export default createStore({
          return data;
       },
       async login({ commit }, form) {
-         const response = await fetch("http://localhost:3003/api/auth/login", {
+         const response = await fetch(`${apiUrl}/auth/login`, {
             method: "POST",
             headers: {
                "Content-Type": "application/json",
@@ -118,7 +118,7 @@ export default createStore({
          for (const data in form) {
             formData.append(data, form[data]);
          }
-         const response = await fetch("http://localhost:3003/api/auth/update", {
+         const response = await fetch(`${apiUrl}/auth/update`, {
             method: "PUT",
             headers: {
                Authorization,
@@ -162,7 +162,7 @@ export default createStore({
          for (const data in form) {
             formData.append(data, form[data]);
          }
-         const response = await fetch("http://localhost:3003/api/posts/newpost", {
+         const response = await fetch(`${apiUrl}/posts/newpost`, {
             method: "POST",
             headers: {
                Authorization,
@@ -179,12 +179,27 @@ export default createStore({
       clearPosts({ commit }) {
          commit("CLEAR_POSTS");
       },
+      async checkLike({ commit }, checker) {
+         const response = fetch(`${apiUrl}/posts/getlike`, {
+            method: "POST",
+            headers: {
+               Authorization,
+               "Content-Type": "application/json",
+            },
+            body: JSON.stringify(checker),
+         });
+         if (response.status !== 200) {
+            throw new Error(data.error);
+         }
+         return response;
+      },
+
       createComment({ commit }, form) {
          const formData = new FormData();
          for (const data in form) {
             formData.append(data, form[data]);
          }
-         const response = fetch("http://localhost:3003/api/posts/newcomment", {
+         const response = fetch(`${apiUrl}/posts/newcomment`, {
             method: "POST",
             headers: {
                Authorization,

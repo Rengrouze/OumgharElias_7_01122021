@@ -13,7 +13,6 @@
 
          <post
             :visible="post.enable"
-            reported="false"
             :profile-pic-url="post.user.profilepicurl"
             :id="post.id"
             :mediaurl="post.mediaurl"
