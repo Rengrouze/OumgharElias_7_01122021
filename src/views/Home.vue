@@ -25,8 +25,6 @@
             <template v-slot:op-work> {{ " " + post.user.workplace }}</template>
             <template v-slot:timedate> Posté le {{ post.date }} à {{ post.time }} </template>
             <template v-slot:text>{{ post.text }}</template>
-            <template v-slot:commentsnumber>{{ post.commentsnumber }}</template>
-            <template v-slot:likesnumber>{{ post.like }}</template>
          </post>
       </div>
    </div>

@@ -72,6 +72,14 @@ export default {
             .catch((error) => {
                this.message = error.message;
             });
+         this.$store
+            .dispatch("clearPosts") // clear posts
+            .then(() => {
+               this.$store.dispatch("getPosts");
+            })
+            .catch((error) => {
+               this.errorMessage = error.message;
+            });
       },
    },
 };

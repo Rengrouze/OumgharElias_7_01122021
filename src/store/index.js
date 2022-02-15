@@ -16,7 +16,15 @@ export default createStore({
       },
       posts: null,
    },
-   getters: {},
+   getters: {
+      userLikedPost: (state) => (postId) => {
+         const post = state.posts.find((post) => postId == post.id);
+         const currentUserLike = post.liked_post.find((liked) => liked.user__id == state.user.userId);
+         console.log("🚀 ~ file: index.js ~ line 23 ~ currentUserLike", currentUserLike);
+         return !!(currentUserLike ? currentUserLike.liked : 0);
+      },
+      postNumLikes: (state) => (postId) => {},
+   },
 
    mutations: {
       UPDATE_POSTS(state, data) {
@@ -76,7 +84,7 @@ export default createStore({
    },
    actions: {
       async signup({ commit }, form) {
-         const response = await fetch("http://localhost:3003/api/auth/signup", {
+         const response = await fetch(`${apiUrl}/auth/signup`, {
             method: "POST",
             headers: {
                "Content-Type": "application/json",
@@ -180,7 +188,7 @@ export default createStore({
          commit("CLEAR_POSTS");
       },
       async checkLike({ commit }, checker) {
-         const response = fetch(`${apiUrl}/posts/getlike`, {
+         const response = await fetch(`${apiUrl}/posts/getlike`, {
             method: "POST",
             headers: {
                Authorization,
@@ -188,10 +196,26 @@ export default createStore({
             },
             body: JSON.stringify(checker),
          });
+         const data = await response.json();
          if (response.status !== 200) {
             throw new Error(data.error);
          }
-         return response;
+         return data;
+      },
+      async like({ commit }, checker) {
+         const response = fetch(`${apiUrl}/posts/like`, {
+            method: "POST",
+            headers: {
+               Authorization,
+               "Content-Type": "application/json",
+            },
+            body: JSON.stringify(checker),
+         });
+         const data = await response.json();
+         if (response.status !== 200) {
+            throw new Error(data.error);
+         }
+         return data;
       },
 
       createComment({ commit }, form) {

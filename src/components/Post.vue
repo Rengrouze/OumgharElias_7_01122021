@@ -8,16 +8,16 @@ export default {
       NewComment,
    },
    props: {
-      visible: Boolean,
+      visible: Number,
       reported: Boolean,
       profilePicUrl: String,
-      id: String,
+      id: Number,
       mediaurl: String,
    },
    data() {
       return {
          comments: null,
-         liked: false,
+         // liked: false,
          supressConfirm: false,
          seeComments: false,
          noImage: false,
@@ -37,6 +37,7 @@ export default {
          likeChecker: {
             postId: this.id,
             userId: this.$store.state.user.userId,
+            signal: null,
          },
       };
    },
@@ -49,6 +50,16 @@ export default {
       specifiedPost() {
          return this.$store.state.posts.filter((post) => post.id == this.id);
       },
+
+      liked() {
+         return this.$store.getters.userLikedPost(this.id);
+      },
+      numLikes() {
+         return this.specifiedPost[0].liked_post.filter((liked_post) => liked_post.liked === 1).length; // get number of likes;
+      },
+      numComments() {
+         return this.specifiedPost[0].comment.length;
+      },
    },
    created() {
       this.comments = this.specifiedPost[0].comment;
@@ -57,15 +68,6 @@ export default {
       } else {
          this.isOp = false;
       }
-
-      //check if the user has already liked the post
-      this.$store.dispatch("checkLike", this.likeChecker).then((res) => {
-         if ((res = true)) {
-            this.liked = true;
-         } else {
-            this.liked = false;
-         }
-      });
    },
 
    methods: {
@@ -73,16 +75,6 @@ export default {
          this.visible = false;
       },
 
-      liked() {
-         this.content.liked = !this.content.liked;
-         if (this.content.liked) {
-            this.content.liked = true;
-            this.content.likesNumber++;
-         } else {
-            this.content.liked = false;
-            this.content.likesNumber--;
-         }
-      },
       displayComments() {
          this.seeComments = !this.seeComments;
       },
@@ -149,7 +141,7 @@ export default {
                </div>
             </div>
 
-            <div v-if="reported == true && !this.$store.state.user.mod">Vous avez signalé ce post</div>
+            <div v-if="this.reported == true && !this.$store.state.user.mod">Vous avez signalé ce post</div>
             <div
                @click="supressPost()"
                v-if="supressConfirm == true && this.$store.state.user.mod"
@@ -164,7 +156,7 @@ export default {
          <!-- Content of the post (image/gif/text) -->
          <div class="p-5 w-8/12 h-auto">
             <p><slot name="text"></slot></p>
-            <img v-if="!noImage" :src="mediaurl" class="w-full h-auto pt-5 pb-5" />
+            <img v-if="!this.noImage" :src="mediaurl" class="w-full h-auto pt-5 pb-5" />
          </div>
          <!-- separator -->
          <div class="h-1 w-11/12 rounded-xl bg-[#2D6991]"></div>
@@ -173,17 +165,17 @@ export default {
             <div class="text-[#091F43] flex flex-row justify-center items-center w-2/4">
                <div @click="displayComments()" class="flex relative h-4 w-4 mr-1 cursor-pointer">
                   <i class="far fa-comment relative top-0 -z-10"></i
-                  ><i v-show="addNewComment" class="fas fa-comment absolute top-0 left-0 right-0 bottom-0 z-0"></i>
+                  ><i v-show="this.seeComments" class="fas fa-comment absolute top-0 left-0 right-0 bottom-0 z-0"></i>
                </div>
-               <div class="cursor-default"><slot name="commentsnumber"></slot></div>
+               <div class="cursor-default">{{ numComments }}</div>
             </div>
             <div class="h-full w-2 border-l-2 border-[#2D6991]"></div>
             <div class="text-[#D1515A] flex flex-row justify-center items-center w-2/4">
                <div @click="liked()" class="flex relative h-4 w-4 mr-1 cursor-pointer">
                   <i class="far fa-heart relative top-0 -z-10"></i
-                  ><i v-show="liked" class="fas fa-heart absolute top-0 left-0 right-0 bottom-0 z-0"></i>
+                  ><i v-show="this.liked" class="fas fa-heart absolute top-0 left-0 right-0 bottom-0 z-0"></i>
                </div>
-               <div class="cursor-default"><slot name="likesnumber"></slot></div>
+               <div class="cursor-default">{{ numLikes }}</div>
             </div>
          </div>
       </div>
