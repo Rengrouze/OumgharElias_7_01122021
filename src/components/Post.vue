@@ -9,7 +9,7 @@ export default {
    },
    props: {
       visible: Number,
-      reported: Boolean,
+
       profilePicUrl: String,
       id: Number,
       mediaurl: String,
@@ -17,26 +17,22 @@ export default {
    data() {
       return {
          comments: null,
-         // liked: false,
-         supressConfirm: false,
+
          seeComments: false,
          noImage: false,
-         newComment: {
-            op: "",
-            text: "",
-            mediaurl: "",
-            date: "",
-            time: "",
-         },
-         isOp: false,
-         errorMessage: "",
-         directLink: false,
-         imgFile: "", // image file name
-         imgFileShort: "", // image short file name
-         newCommentText: "", // new comment text
+
          likeChecker: {
             postId: this.id,
             userId: this.$store.state.user.userId,
+            signal: null,
+         },
+         reportChecker: {
+            postId: this.id,
+            userId: this.$store.state.user.userId,
+            signal: null,
+         },
+         suppressChecker: {
+            postId: this.id,
             signal: null,
          },
       };
@@ -50,15 +46,24 @@ export default {
       specifiedPost() {
          return this.$store.state.posts.filter((post) => post.id == this.id);
       },
-
+      isop() {
+         if (this.specifiedPost[0].op == this.$store.state.user.userId) {
+            return true;
+         } else {
+            return false;
+         }
+      },
       liked() {
          return this.$store.getters.userLikedPost(this.id);
+      },
+      reported() {
+         return this.$store.getters.userReportedPost(this.id);
       },
       numLikes() {
          return this.specifiedPost[0].liked_post.filter((liked_post) => liked_post.liked === 1).length; // get number of likes;
       },
       numComments() {
-         return this.specifiedPost[0].comment.length;
+         return this.specifiedPost[0].comment.filter((comment) => comment.enable === 1).length;
       },
    },
    created() {
@@ -71,10 +76,6 @@ export default {
    },
 
    methods: {
-      supressPost() {
-         this.visible = false;
-      },
-
       displayComments() {
          this.seeComments = !this.seeComments;
       },
@@ -98,56 +99,90 @@ export default {
          this.imgFileShort = this.imgFile.split("\\").pop();
          document.getElementById(this.id + "imageWithFile").innerHTML = this.imgFileShort;
       },
+      like() {
+         if (this.liked) {
+            this.likeChecker.signal = 0;
+         } else {
+            this.likeChecker.signal = 1;
+         }
+         this.$store.dispatch("like", this.likeChecker).then(() => {
+            this.likeChecker.signal = null;
+            this.liked = false;
+         });
+      },
+      report() {
+         if (this.reported) {
+            this.reportChecker.signal = 0;
+            alert("Vous avez annulé votre signalement");
+         } else {
+            this.reportChecker.signal = 1;
+            alert("Vous avez signalé ce post");
+         }
+         this.$store.dispatch("report", this.reportChecker).then(() => {
+            this.reportChecker.signal = null;
+         });
+         this.$store
+            .dispatch("clearPosts") // clear posts
+            .then(() => {
+               this.$store.dispatch("getPosts");
+            })
+            .catch((error) => {
+               alert(error.message);
+            });
+      },
+      supressPost() {
+         //ask user if he really want to supress the post
+         var supress = confirm("Vous êtes sur le point de supprimer ce post, êtes vous sûr ?");
+         if (!supress) {
+            return;
+         }
+
+         if (!this.visible) {
+            this.suppressChecker.signal = 1;
+         } else {
+            this.suppressChecker.signal = 0;
+         }
+         this.$store.dispatch("supressPost", this.suppressChecker).then(() => {
+            this.suppressChecker.signal = null;
+         });
+         //supp the post in the store
+      },
    },
 };
 </script>
 <template>
    <!-- Example of a Post -->
 
-   <div v-if="visible" :id="id" class="flex flex-col w-10/12 lg:w-8/12 justify-center items-center mb-10">
+   <div v-if="visible" :id="id" class="flex flex-col lg:w-7/12 w-full justify-center items-center mb-10">
       <div class="flex flex-col h-auto border-2 w-full shadow-xl rounded-xl justify-center items-center">
          <!-- header section with the profile pic, name, workplace, report button-->
          <div class="flex w-full h-auto p-6 justify-between items-center">
             <!-- Op section -->
             <div class="flex w-3/4 items-center flex-1">
-               <img :src="profilePicUrl" class="h-16 w-16 rounded-full border-4 border-[#D1515A] overflow-hidden object-cover" />
+               <img
+                  :src="profilePicUrl"
+                  class="md:h-16 md:w-16 h-8 w-8 rounded-full border-2 md:border-4 border-[#D1515A] overflow-hidden object-cover"
+               />
 
                <div class="flex flex-col items-start ml-4 pt-2 text-ellipsis whitespace-nowrap overflow-hidden">
-                  <p><slot name="op-name"></slot></p>
-                  <p><i class="far fa-building"></i><slot name="op-work"></slot></p>
-                  <p class="text-xs pt-2 text-slate-600"><slot name="timedate"></slot></p>
+                  <slot name="op-name"></slot>
+                  <p class="md:block hidden"><i class="far fa-building"></i><slot name="op-work"></slot></p>
+                  <slot name="timedate"></slot>
                </div>
             </div>
-            <div v-if="this.$store.state.user.mod == 0">
-               <div v-if="reported == false" class="group text-2xl relative pr-5">
-                  <i class="fas fa-bars transition-opacity duration-300 group-hover:opacity-0 -z-10 absolute"></i>
-                  <div
-                     @click="reported = true"
-                     class="opacity-0 transition-opacity duration-300 group-hover:opacity-100 z-10 text-red-600 active:text-red-300 cursor-pointer"
-                  >
-                     Signaler
-                  </div>
-               </div>
+            <!-- Report button -->
+            <div v-if="this.$store.state.user.mod == 0 && !this.isop">
+               <button @click="report()" v-if="!reported" class="text-red-500 font-bold py-2 px-4 rounded-full">
+                  <i class="far fa-flag"></i>
+               </button>
+               <button @click="report()" v-if="reported" class="text-red-500 font-bold py-2 px-4 rounded-full">
+                  <i class="fas fa-flag"></i>
+               </button>
             </div>
-            <div v-if="this.$store.state.user.mod == 1 && supressConfirm == false">
-               <div class="group text-2xl relative pr-5">
-                  <i class="fas fa-bars transition-opacity duration-300 group-hover:opacity-0 -z-10 absolute"></i>
-                  <div
-                     @click="supressConfirm = true"
-                     class="opacity-0 transition-opacity duration-300 group-hover:opacity-100 z-10 text-red-600 active:text-red-300 cursor-pointer"
-                  >
-                     Supprimer ?
-                  </div>
-               </div>
-            </div>
-
-            <div v-if="this.reported == true && !this.$store.state.user.mod">Vous avez signalé ce post</div>
-            <div
-               @click="supressPost()"
-               v-if="supressConfirm == true && this.$store.state.user.mod"
-               class="text-red-600 active:text-red-300 cursor-pointer"
-            >
-               Veuillez cliquez à nouveaux pour confirmer la supression
+            <div v-if="this.$store.state.user.mod == 1 || this.isop == 1">
+               <button @click="supressPost()" class="text-red-500 font-bold py-2 px-4 rounded-full">
+                  <i class="fas fa-trash-alt"></i>
+               </button>
             </div>
          </div>
          <!-- separator -->
@@ -171,7 +206,7 @@ export default {
             </div>
             <div class="h-full w-2 border-l-2 border-[#2D6991]"></div>
             <div class="text-[#D1515A] flex flex-row justify-center items-center w-2/4">
-               <div @click="liked()" class="flex relative h-4 w-4 mr-1 cursor-pointer">
+               <div @click="like()" class="flex relative h-4 w-4 mr-1 cursor-pointer">
                   <i class="far fa-heart relative top-0 -z-10"></i
                   ><i v-show="this.liked" class="fas fa-heart absolute top-0 left-0 right-0 bottom-0 z-0"></i>
                </div>
@@ -190,14 +225,15 @@ export default {
                   :key="comment.id"
                   :visibleComment="comment.enable"
                   :reportedComment="false"
-                  :id="'comment' + comment.id"
                   :idComment="comment.id"
+                  :idUser="comment.user.id"
+                  :idPost="comment.post__id"
                >
                   <template v-slot:userName>{{ comment.user.name + " " + comment.user.surname }}</template>
                   <template v-slot:profilePic
                      ><img
                         :src="comment.user.profilepicurl"
-                        class="object-cover rounded-full border-2 border-[#091F43] overflow-hidden h-10 w-10 mr-2"
+                        class="object-cover rounded-full border-2 border-[#D1515A] overflow-hidden h-10 w-10 mr-2"
                   /></template>
                   <template v-slot:date>{{ comment.date }}</template>
                   <template v-slot:time>{{ comment.time }}</template>

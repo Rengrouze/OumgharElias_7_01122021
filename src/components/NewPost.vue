@@ -91,7 +91,10 @@ export default {
       -
    </div>
 
-   <div v-if="display" class="flex flex-col p-2 border-2 rounded-xl bg-gray-50 shadow-xl mb-2 w-8/12 justify-center items-center mb-10">
+   <div
+      v-if="display"
+      class="flex flex-col p-2 border-2 rounded-xl bg-gray-50 shadow-xl w-full xs:w-8/12 justify-center items-center mb-10"
+   >
       <label for="NewPost" class="text-gray-700 text-sm">Ajouter un post</label>
       <input
          type="text"
@@ -102,13 +105,20 @@ export default {
       />
       <div class="flex flex-col w-full justify-center items-center">
          <p class="mt-4"><i class="far fa-smile"></i> Vous voulez ajoutez une image ou un gif ?</p>
-         <div class="flex flex-row justify-evenly w-full">
+         <div class="flex md:flex-row flex-col justify-evenly w-2/4 md:w-full">
             <button
                @click="imageWithDirectLink()"
                class="mt-4 mb-2 border-2 border-[#2D6991] bg-[#2D6991] rounded-lg text-sky-50 p-1 cursor-pointer"
             >
                Avec un lien Direct
             </button>
+            <input
+               v-if="directLink"
+               v-model="newPost.mediaurl"
+               type="url"
+               class="w-full h-10 p-2 border-2 border-[#091F43] rounded-xl md:hidden block"
+               placeholder="Exemple : https://c.tenor.com/x8eBbUiF4RYAAAAS/yes-sweet.gif "
+            />
             <label
                for="file"
                class="mt-4 mb-2 border-2 border-[#2D6991] bg-[#2D6991] rounded-lg text-sky-50 font-normal p-1 cursor-pointer"
@@ -131,7 +141,7 @@ export default {
                v-if="directLink"
                v-model="newPost.mediaurl"
                type="url"
-               class="w-full h-10 p-2 border-2 border-[#091F43] rounded-xl"
+               class="w-full h-10 p-2 border-2 border-[#091F43] rounded-xl md:block hidden"
                placeholder="Exemple : https://c.tenor.com/x8eBbUiF4RYAAAAS/yes-sweet.gif "
             />
          </div>

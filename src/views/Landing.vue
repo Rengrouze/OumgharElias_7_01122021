@@ -1,7 +1,7 @@
 <!-- Contains the feed section -->
 
 <template>
-   <div class="flex flex-col items-center w-4/12 ml-auto mr-auto">
+   <div class="flex flex-col items-center w-10/12 xs:w-4/12 ml-auto mr-auto">
       <div class="flex flex-col items-center mt-40 w-full h-6/12">
          <div class="h-36">
             <img class="h-36" src="/src/assets/icon-above-font.svg" />
@@ -51,18 +51,18 @@
             </div>
          </form>
          <div class="text-red-600 pt-3">{{ message }}</div>
-         <div class="flex flex-row justify-between mt-10 w-full">
+         <div class="flex xs:flex-row flex-col xs:justify-between items-center mt-10 w-full">
             <button
                @click="showSignupForm = true"
                v-if="showSignupForm == false"
-               class="border-2 border-blue-400 rounded w-32 hover:bg-blue-400 hover:text-white transition-all"
+               class="xs:mb-0 mb-3 border-2 border-blue-400 rounded w-32 hover:bg-blue-400 hover:text-white transition-all"
             >
                S'inscrire
             </button>
             <button
                @click="showSignupForm = false"
                v-if="showSignupForm == true"
-               class="border-2 border-blue-400 rounded w-32 hover:bg-blue-400 hover:text-white transition-all"
+               class="xs:mb-0 mb-3 border-2 border-blue-400 rounded w-32 hover:bg-blue-400 hover:text-white transition-all"
             >
                Retour
             </button>

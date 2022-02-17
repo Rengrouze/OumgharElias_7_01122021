@@ -2,26 +2,57 @@
 export default {
    name: "comment",
    props: {
-      idComment: String,
+      idComment: Number,
+      idPost: Number,
+
+      idUser: Number,
 
       visibleComment: {
          type: Boolean,
          default: true,
       },
-
-      reportedComment: {
-         type: Boolean,
-         default: false,
+   },
+   created() {
+      if (this.idUser == this.$store.state.user.userId) {
+         this.isOp = true;
+      } else {
+         this.isOp = false;
+      }
+   },
+   computed: {
+      specifiedComment() {
+         //get the post in the state then find the comment
+         return this.$store.state.posts.find((post) => post.id == this.idPost).comment.find((comment) => comment.id == this.idComment);
+      },
+      reported() {
+         return this.specifiedComment.report;
+      },
+      isOp() {
+         return this.specifiedComment.user.id == this.$store.state.user.userId;
       },
    },
    methods: {
       supressComment() {
-         this.$props.visibleComment = false;
+         var supress = confirm("Voulez-vous vraiment supprimer ce commentaire ?");
+         if (!supress) {
+            return;
+         }
+         if (!this.visibleComment) {
+            this.suppressChecker.signal = 1;
+         } else {
+            this.suppressChecker.signal = 0;
+         }
+         this.$store.dispatch("supressComment", this.suppressChecker).then(() => {
+            this.suppressChecker.signal = 0;
+         });
       },
    },
    data() {
       return {
-         supressCommentConfirm: false,
+         suppressChecker: {
+            commentId: this.idComment,
+            signal: null,
+         },
       };
    },
 };
@@ -30,42 +61,29 @@ export default {
 <template>
    <div v-if="visibleComment == true" class="flex flex-col p-2 border border-gray-300 rounded-xl bg-gray-50 shadow-xl mb-2 w-full">
       <div class="flex flex-col items-center w-full" :id="'comment' + idComment">
-         <div class="flex w-full flex-row justify-between">
-            <div class="flex flex-row items-center">
-               <slot name="profilePic"></slot>
-               <p class="flex-wrap pb-4"><slot name="userName"></slot></p>
-            </div>
-
-            <p class="text-xs text-slate-600">Posté le <slot name="date"></slot> à <slot name="time"></slot></p>
-            <div v-if="this.$store.state.user.mod == 0">
-               <div v-if="reportedComment == false" class="group text-2xl relative">
-                  <i class="fas fa-bars transition-opacity opacity-100 duration-300 group-hover:opacity-0 group-hover:-z-10 absolute"></i>
-                  <div
-                     @click="reportedComment = true"
-                     class="opacity-0 transition-opacity duration-300 group-hover:opacity-100 z-10 text-red-600 active:text-red-300 cursor-pointer"
-                  >
-                     Signaler
-                  </div>
+         <div class="flex w-full lg:flex-row flex-col justify-between">
+            <div class="flex flex-row items-center justify-between">
+               <div class="flex flex-row items-center">
+                  <slot name="profilePic"></slot>
+                  <p class="flex-wrap pb-4 pt-2"><slot name="userName"></slot></p>
                </div>
-            </div>
-            <div v-if="this.$store.state.user.mod == 1">
-               <div v-if="supressCommentConfirm == false" class="group text-2xl relative">
-                  <i class="fas fa-bars transition-opacity opacity-100 duration-300 group-hover:opacity-0 group-hover:-z-10 absolute"></i>
-                  <div
-                     @click="supressCommentConfirm = true"
-                     class="opacity-0 transition-opacity duration-300 group-hover:opacity-100 z-10 text-red-600 active:text-red-300 cursor-pointer"
-                  >
-                     Supprimer ?
-                  </div>
+
+               <div class="md:hidden block" v-if="this.$store.state.user.mod == 1 || this.isOp == 1">
+                  <button @click="supressComment()" class="text-red-500 font-bold py-2 px-4 rounded-full">
+                     <i class="fas fa-trash-alt"></i>
+                  </button>
                </div>
             </div>
 
-            <div v-if="reportedComment == true && this.$store.state.user.mod == 0">Post signalé</div>
-            <div @click="supressComment()" v-if="supressCommentConfirm == true && this.$store.state.user.mod == 1">
-               Veuillez cliquez à nouveau pour confirmer
+            <p class="text-xs text-slate-600 pt-2">Posté le <slot name="date"></slot> à <slot name="time"></slot></p>
+
+            <div class="hidden lg:block" v-if="this.$store.state.user.mod == 1 || this.isOp == 1">
+               <button @click="supressComment()" class="text-red-500 font-bold py-2 px-4 rounded-full">
+                  <i class="fas fa-trash-alt"></i>
+               </button>
             </div>
          </div>
-         <div class="h-1 w-10/12 -mt-1 rounded-xl bg-[#2D6991]"></div>
+         <div class="h-1 w-10/12 rounded-xl mt-5 lg:mt-0 bg-[#2D6991]"></div>
          <div class="flex flex-col mt-5 justify-center items-center">
             <p><slot name="text"></slot></p>
             <slot name="media"></slot>

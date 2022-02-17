@@ -30,7 +30,7 @@ export default {
          <ProfileCard>
             <template v-slot:userProfilePic>
                <img
-                  class="w-20 h-20 object-cover rounded-full overflow-hidden border-4 border-[#2D6991]"
+                  class="md:w-20 md:h-20 w-16 h-16 object-cover rounded-full overflow-hidden border-2 border-[#D1515A] md:border-4"
                   alt="profilepic"
                   :src="user.mediaurl"
                />
@@ -41,8 +41,12 @@ export default {
 
          <button class="mt-4 text-red-600 font-bold text-xl" @click="logout">Déconnexion</button>
       </div>
-      <div class="w-6/12 lg:w-3/12">
-         <router-link to="/home"><img src="../assets/glogb.svg" /></router-link>
+      <div class="w-6/12 lg:w-3/12 relative">
+         <router-link to="/home"
+            ><img src="../assets/glogb.svg" class="md:opacity-100 opacity-0" />
+            <img src="../assets/icon.svg" class="md:opacity-0 opacity-100 w-20 h-20 absolute object-cover rounded-full right-5 -top-6"
+         /></router-link>
+
          <slot name="demiurge"></slot>
       </div>
    </header>

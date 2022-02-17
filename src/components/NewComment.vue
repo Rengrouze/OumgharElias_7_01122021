@@ -96,13 +96,20 @@ export default {
       />
       <div class="flex flex-col w-full justify-center items-center">
          <p class="mt-4"><i class="far fa-smile"></i> Vous voulez ajoutez une image ou un gif ?</p>
-         <div class="flex flex-row justify-evenly w-full">
+         <div class="flex md:flex-row flex-col justify-evenly w-full">
             <button
                @click="imageWithDirectLink()"
                class="mt-4 mb-2 border-2 border-[#2D6991] bg-[#2D6991] rounded-lg text-sky-50 p-1 cursor-pointer"
             >
                Avec un lien Direct
             </button>
+            <input
+               v-if="directLink"
+               type="url "
+               class="w-full h-10 p-2 border-2 border-[#091F43] rounded-xl md:hidden block"
+               placeholder="Exemple : https://c.tenor.com/x8eBbUiF4RYAAAAS/yes-sweet.gif "
+               v-model="newComment.mediaurl"
+            />
             <label
                for="file"
                class="mt-4 mb-2 border-2 border-[#2D6991] bg-[#2D6991] rounded-lg text-sky-50 font-normal p-1 cursor-pointer"
@@ -124,7 +131,7 @@ export default {
             <input
                v-if="directLink"
                type="url "
-               class="w-full h-10 p-2 border-2 border-[#091F43] rounded-xl"
+               class="w-full h-10 p-2 border-2 border-[#091F43] rounded-xl md:block hidden"
                placeholder="Exemple : https://c.tenor.com/x8eBbUiF4RYAAAAS/yes-sweet.gif "
                v-model="newComment.mediaurl"
             />
