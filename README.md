@@ -1,7 +1,9 @@
-# Vue 3 + Vite
+# Hello
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+C'est le repo de mon projet 7 pour OpenClassrooms
 
-## Recommended IDE Setup
+Vous aurez besoin de son Api pour faire des requêtes
 
-- [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar)
+lien de l'api : https://github.com/Rengrouze/API-pour-Projet-7-OC-Oumghar-Elias
+
+Pour lancer le système : npm install => npm run dev
