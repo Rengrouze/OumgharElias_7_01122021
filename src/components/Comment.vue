@@ -84,12 +84,11 @@ export default {
             </div>
          </div>
          <div class="h-1 w-10/12 rounded-xl mt-5 lg:mt-0 bg-[#2D6991]"></div>
+         <!-- media info section -->
          <div class="flex flex-col mt-5 justify-center items-center">
             <p><slot name="text"></slot></p>
             <slot name="media"></slot>
          </div>
-
-         <!-- media info section -->
       </div>
    </div>
 </template>
