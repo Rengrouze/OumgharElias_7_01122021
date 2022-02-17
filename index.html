@@ -1,20 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
    <head>
       <meta charset="UTF-8" />
-      <link rel="icon" href="/favicon.ico" />
+      <link rel="icon" href="/src/assets/icon.svg" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Vite App</title>
+      <title>Groupomania</title>
+      <script src="https://kit.fontawesome.com/53a23bf523.js" crossorigin="anonymous"></script>
    </head>
    <body>
-      <div id="app">{{ message}}</div>
+      <div class="h-screen" id="app"></div>
       <script type="module" src="/src/main.js"></script>
       <script>
          var app = new Vue({
             el: "#app",
-            data: {
-               message: "Hello Vue!",
-            },
+            data: {},
          });
       </script>
    </body>
