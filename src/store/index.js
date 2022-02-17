@@ -11,7 +11,7 @@ export default createStore({
          firstName: "",
          lastName: "",
          workPlace: "",
-         mediaurl: "",
+         mediaurl: "/src/assets/icon.png",
          mod: false,
       },
       posts: null,
@@ -42,21 +42,45 @@ export default createStore({
       CLEAR_POSTS(state) {
          state.posts = null;
       },
+      UPDATE_LIKE(state, data) {
+         // search the like array in the post
+         var post = state.posts.find((post) => post.id == data.postId).liked_post.find((liked) => liked.user__id == data.userId);
+         var liked = data.signal;
+         var user = data.userId;
 
-      /*  UPDATE_LIKE(state, data) {
-         // find the post in the state then update the like if it does not exist then add itconst post = state.posts.find((post) => post.id == data.postId);
-         const post = state.posts.find((post) => post.id == data.postId);
-         const currentUserLike = post.liked_post.find((liked) => liked.user__id == state.user.userId);
-         console.log(currentUserLike);
-         currentUserLike.liked = data.signal;
-      }, 
+         var payload = {
+            like: liked,
+            user__id: user,
+         };
+
+         if (!post) {
+            state.posts.find((post) => post.id == data.postId).liked_post.push(payload);
+         } else {
+            state.posts.find((post) => post.id == data.postId).liked_post.find((liked) => liked.user__id == data.userId).liked =
+               data.signal;
+         }
+      },
+
       UPDATE_REPORT(state, data) {
-         // find the post in the state then update the like
-         const post = state.posts.find((post) => post.id == data.postId);
-         const currentUserReport = post.reported_post.find((reported) => reported.user__id == state.user.userId);
-         console.log(currentUserReport);
-         currentUserReport.reported = data.signal;
-      },*/
+         // search the like array in the post
+         var post = state.posts.find((post) => post.id == data.postId).reported_post.find((reported) => reported.user__id == data.userId);
+         var report = data.signal;
+         var user = data.userId;
+
+         var payload = {
+            reported: report,
+            user__id: user,
+         };
+         if (!post) {
+            state.posts
+               .find((post) => post.id == data.postId)
+               .reported_post.find((reported) => reported.user__id == data.userId)
+               .push(payload);
+         }
+         state.posts.find((post) => post.id == data.postId).reported_post.find((reported) => reported.user__id == data.userId).reported =
+            data.signal;
+      },
+
       DELETE_POST(state, data) {
          //find the post in the state then delete it
          const index = state.posts.findIndex((post) => post.id == data);
@@ -73,8 +97,13 @@ export default createStore({
          state.user.firstName = data.userFirstName;
          state.user.lastName = data.userLastName;
          state.user.workPlace = data.userWorkplace;
-         state.user.mediaurl = data.userMediaUrl;
          state.user.mod = data.mod;
+         if (!data.userMediaUrl) {
+            state.user.mediaurl = "/src/assets/icon.png";
+         } else {
+            state.user.mediaurl = data.userMediaUrl;
+         }
+
          console.log(state.user);
 
          localStorage.setItem("user", JSON.stringify(state.user));
@@ -176,6 +205,7 @@ export default createStore({
          } else {
             localStorage.setItem("user", JSON.stringify(data));
             commit("UPDATE_USER", data);
+            commit("CLEAR_POSTS");
             return data;
          }
       },
@@ -252,7 +282,7 @@ export default createStore({
          if (response.status !== 200) {
             throw new Error(data.error);
          }
-
+         commit("UPDATE_REPORT", checker);
          return data;
       },
 
@@ -274,21 +304,7 @@ export default createStore({
          console.log.id;
          return data;
       },
-      async reportComment({ commit }, checker) {
-         const response = await fetch(`${apiUrl}/posts/reportComment`, {
-            method: "POST",
-            headers: {
-               Authorization,
-               "Content-Type": "application/json",
-            },
-            body: JSON.stringify(checker),
-         });
-         const data = await response.json();
-         if (response.status !== 200) {
-            throw new Error(data.error);
-         }
-         return data;
-      },
+
       async supressComment({ commit }, checker) {
          const response = await fetch(`${apiUrl}/posts/supressComment`, {
             method: "PUT",
@@ -323,6 +339,7 @@ export default createStore({
          if (response.status !== 201) {
             throw new Error(data);
          }
+
          return data;
       },
    },

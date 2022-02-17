@@ -121,14 +121,6 @@ export default {
          this.$store.dispatch("report", this.reportChecker).then(() => {
             this.reportChecker.signal = null;
          });
-         this.$store
-            .dispatch("clearPosts") // clear posts
-            .then(() => {
-               this.$store.dispatch("getPosts");
-            })
-            .catch((error) => {
-               alert(error.message);
-            });
       },
       supressPost() {
          //ask user if he really want to supress the post
