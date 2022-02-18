@@ -1,3 +1,4 @@
+import { objectToString } from "@vue/shared";
 import { createStore } from "vuex";
 
 const apiUrl = "http://localhost:3003/api";
@@ -42,14 +43,23 @@ export default createStore({
       CLEAR_POSTS(state) {
          state.posts = null;
       },
+      ADD_POST(state, post) {
+         console.log(state.posts);
+         console.log(post);
+         state.posts.unshift(post);
+      },
+      ADD_COMMENT(state, comment) {
+         console.log(comment);
+         state.posts.find((post) => post.id == comment.post__id).comment.push(comment);
+      },
       UPDATE_LIKE(state, data) {
          // search the like array in the post
          var post = state.posts.find((post) => post.id == data.postId).liked_post.find((liked) => liked.user__id == data.userId);
-         var liked = data.signal;
+         var like = data.signal;
          var user = data.userId;
 
          var payload = {
-            like: liked,
+            liked: like,
             user__id: user,
          };
 
@@ -71,11 +81,9 @@ export default createStore({
             reported: report,
             user__id: user,
          };
+         console.log(payload);
          if (!post) {
-            state.posts
-               .find((post) => post.id == data.postId)
-               .reported_post.find((reported) => reported.user__id == data.userId)
-               .push(payload);
+            state.posts.find((post) => post.id == data.postId).reported_post.push(payload);
          }
          state.posts.find((post) => post.id == data.postId).reported_post.find((reported) => reported.user__id == data.userId).reported =
             data.signal;
@@ -243,6 +251,8 @@ export default createStore({
             body: formData,
          });
          const data = await response.json();
+
+         commit("ADD_POST", data.post);
          if (response.status !== 201) {
             throw new Error(data.error);
          }
@@ -335,7 +345,9 @@ export default createStore({
             },
             body: formData,
          });
-         const data = response.json();
+         const data = await response.json();
+         console.log(data);
+         commit("ADD_COMMENT", data.comment);
          if (response.status !== 201) {
             throw new Error(data);
          }

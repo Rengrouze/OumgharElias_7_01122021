@@ -68,7 +68,7 @@ export default {
                   <p class="flex-wrap pb-4 pt-2"><slot name="userName"></slot></p>
                </div>
 
-               <div class="md:hidden block" v-if="this.$store.state.user.mod == 1 || this.isOp == 1">
+               <div class="lg:hidden block" v-if="this.$store.state.user.mod == 1 || this.isOp == 1">
                   <button @click="supressComment()" class="text-red-500 font-bold py-2 px-4 rounded-full">
                      <i class="fas fa-trash-alt"></i>
                   </button>
@@ -86,7 +86,7 @@ export default {
          <div class="h-1 w-10/12 rounded-xl mt-5 lg:mt-0 bg-[#2D6991]"></div>
          <!-- media info section -->
          <div class="flex flex-col mt-5 justify-center items-center">
-            <p><slot name="text"></slot></p>
+            <p class="h-auto whitespace-pre-wrap"><slot name="text"></slot></p>
             <slot name="media"></slot>
          </div>
       </div>

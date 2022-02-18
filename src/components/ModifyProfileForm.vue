@@ -102,7 +102,7 @@ export default {
             type="text"
             id="userfirstname"
             v-model="userUpdate.firstName"
-            placeholder="Prénom"
+            :placeholder="this.$store.state.user.firstName"
             class="w-full h-10 p-2 border-2 border-[#091F43] rounded-xl"
          />
       </div>
@@ -112,7 +112,7 @@ export default {
             type="text"
             id="userlastname"
             v-model="userUpdate.lastName"
-            placeholder="Nom"
+            :placeholder="this.$store.state.user.lastName"
             class="w-full h-10 p-2 border-2 border-[#091F43] rounded-xl"
          />
       </div>
@@ -122,7 +122,7 @@ export default {
             type="text"
             id="userworkplace"
             v-model="userUpdate.workPlace"
-            placeholder="Poste"
+            :placeholder="this.$store.state.user.workPlace"
             class="w-full h-10 p-2 border-2 border-[#091F43] rounded-xl"
          />
       </div>

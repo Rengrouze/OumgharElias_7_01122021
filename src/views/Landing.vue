@@ -25,18 +25,14 @@
 
             <div class="animate-fade opacity-1" v-if="showSignupForm == true">
                <div class="flex flex-col w-full">
-                  <label for="logPassConfirm">Confirmer le mot de passe</label>
+                  <label for="name">Nom</label>
                   <input
                      class="w-full h-10 p-2 border-2 border-[#091F43] rounded-xl"
-                     type="password"
-                     id="logPassConfirm"
+                     type="text"
+                     id="name"
                      required
-                     v-model="passwordConfirm"
+                     v-model="form.surName"
                   />
-               </div>
-               <div class="flex flex-col w-full">
-                  <label for="name">Nom</label>
-                  <input class="w-full h-10 p-2 border-2 border-[#091F43] rounded-xl" type="text" id="name" required v-model="form.name" />
                </div>
                <div class="flex flex-col w-full">
                   <label for="firstName">Prénom</label>
@@ -45,7 +41,7 @@
                      type="text"
                      id="firstName"
                      required
-                     v-model="form.surName"
+                     v-model="form.name"
                   />
                </div>
             </div>
@@ -104,7 +100,6 @@ export default {
             name: "",
             surName: "",
          },
-         passwordConfirm: "",
       };
    },
    methods: {
@@ -112,21 +107,11 @@ export default {
          //check empty form
          //reset message
          this.message = "";
-         if (
-            this.form.email == "" ||
-            this.form.password == "" ||
-            this.form.passwordConfirm == "" ||
-            this.form.name == "" ||
-            this.form.surName == ""
-         ) {
+         if (this.form.email == "" || this.form.password == "" || this.form.name == "" || this.form.surName == "") {
             this.message = "Veuillez remplir tous les champs";
             return;
          }
 
-         if (this.form.password !== this.passwordConfirm) {
-            this.message = "Les mots de passe ne correspondent pas";
-            return;
-         }
          // check if email is valid
          if (!this.form.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
             this.message = "Votre email n'est pas valide";

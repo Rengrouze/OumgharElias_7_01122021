@@ -72,14 +72,6 @@ export default {
             .catch((error) => {
                this.message = error.message;
             });
-         this.$store
-            .dispatch("clearPosts") // clear posts
-            .then(() => {
-               this.$store.dispatch("getPosts");
-            })
-            .catch((error) => {
-               this.errorMessage = error.message;
-            });
       },
    },
 };
@@ -87,7 +79,7 @@ export default {
 <template>
    <div class="flex flex-col p-2 border border-gray-300 rounded-xl bg-gray-50 shadow-xl mb-2 w-full justify-center items-center">
       <label for="NewComment" class="text-gray-700 text-sm">Ajouter un commentaire</label>
-      <input
+      <textarea
          type="text"
          id="NewComment"
          v-model="newComment.text"

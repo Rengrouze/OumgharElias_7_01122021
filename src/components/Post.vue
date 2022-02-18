@@ -152,7 +152,7 @@ export default {
             <!-- Op section -->
             <div class="flex w-3/4 items-center flex-1">
                <img
-                  :src="profilePicUrl"
+                  :src="profilePicUrl || '/src/assets/icon.png'"
                   class="md:h-16 md:w-16 h-8 w-8 rounded-full border-2 md:border-4 border-[#D1515A] overflow-hidden object-cover"
                />
 
@@ -182,7 +182,7 @@ export default {
 
          <!-- Content of the post (image/gif/text) -->
          <div class="p-5 w-8/12 h-auto">
-            <p><slot name="text"></slot></p>
+            <p class="h-auto whitespace-pre-wrap"><slot name="text"></slot></p>
             <img v-if="!this.noImage" :src="mediaurl" class="w-full h-auto pt-5 pb-5" />
          </div>
          <!-- separator -->
@@ -224,7 +224,7 @@ export default {
                   <template v-slot:userName>{{ comment.user.name + " " + comment.user.surname }}</template>
                   <template v-slot:profilePic
                      ><img
-                        :src="comment.user.profilepicurl"
+                        :src="comment.user.profilepicurl || '/src/assets/icon.png'"
                         class="object-cover rounded-full border-2 border-[#D1515A] overflow-hidden h-10 w-10 mr-2"
                   /></template>
                   <template v-slot:date>{{ comment.date }}</template>
