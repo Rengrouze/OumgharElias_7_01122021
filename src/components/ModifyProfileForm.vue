@@ -94,6 +94,21 @@ export default {
             // we update the user in the store
          });
       },
+      deleteAccount() {
+         // if you want to delete your account
+         var confirmation = confirm("Voulez-vous vraiment supprimer votre compte ? Vous ne pourrez pas le récupérer");
+
+         if (confirmation == true) {
+            this.$store
+               .dispatch("deleteAccount", this.userUpdate)
+               .then(() => {
+                  this.$router.push("/");
+               })
+               .catch((err) => {
+                  this.errorMessage = err.response.data.message;
+               });
+         }
+      },
    },
 };
 </script>
@@ -196,6 +211,12 @@ export default {
             class="mt-4 mb-2 border-2 border-[#2D6991] bg-[#2D6991] rounded-lg text-sky-50 p-1 font-bold cursor-pointer"
          >
             Envoyer
+         </button>
+         <button
+            @click="deleteAccount()"
+            class="mt-4 mb-2 border-2 border-[#b91717] bg-[#f11212] rounded-lg text-sky-50 p-1 font-bold cursor-pointer"
+         >
+            Supprimer mon compte
          </button>
       </div>
    </div>

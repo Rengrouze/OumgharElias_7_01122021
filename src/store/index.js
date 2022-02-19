@@ -46,6 +46,9 @@ export default createStore({
          state.posts = null;
       },
       ADD_POST(state, post) {
+         if (!state.posts) {
+            state.posts = [];
+         }
          console.log(state.posts);
          console.log(post);
          state.posts.unshift(post);
@@ -219,6 +222,26 @@ export default createStore({
          } else {
             localStorage.setItem("user", JSON.stringify(data));
             commit("UPDATE_USER", data);
+            commit("CLEAR_POSTS");
+            return data;
+         }
+      },
+      async deleteAccount({ commit }, user) {
+         const response = await fetch(`${apiUrl}/auth/delete`, {
+            method: "PUT",
+            headers: {
+               Authorization,
+               "Content-Type": "application/json",
+            },
+            body: JSON.stringify(user),
+         });
+         const data = await response.json();
+         if (response.status !== 200) {
+            throw new Error(data.error);
+         } else {
+            localStorage.removeItem("user");
+            localStorage.removeItem("token");
+            commit("DELETE_USER");
             commit("CLEAR_POSTS");
             return data;
          }
