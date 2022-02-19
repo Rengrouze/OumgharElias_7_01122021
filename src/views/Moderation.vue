@@ -1,4 +1,5 @@
 <template>
+   <!-- it's the same as the one in the Home.vue, the only difference is the fact that this page only displays the reported post and is accessible only for moderators -->
    <div>
       <Header>
          <template v-slot:demiurge
@@ -66,11 +67,7 @@ export default {
          this.$store.dispatch("getPosts");
       }
    },
-   data() {
-      return {
-         stuffToModerate: false,
-      };
-   },
+
    beforeRouteEnter(to, from, next) {
       if (!localStorage.getItem("token")) {
          if (localStorage.getItem("user")) {

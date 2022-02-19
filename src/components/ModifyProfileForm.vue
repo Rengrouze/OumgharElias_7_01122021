@@ -4,6 +4,7 @@ export default {
 
    data() {
       return {
+         // form data
          userUpdate: {
             userId: this.$store.state.user.userId,
             firstName: "",
@@ -14,17 +15,18 @@ export default {
             file: "",
          },
 
-         errorMessage: "",
-         directLink: false,
+         errorMessage: "", // in case of error
+         directLink: false, // if the user clicked on the "avec un lien direct" button
          imgFile: "", // image file name
          imgFileShort: "", // image short file name
-         secretInput: false,
-         secretCode: "",
+         secretInput: false, // if the user checked the "êtes vous un modérateur ?" checkbox
+         secretCode: "", // secret code for being a moderator
       };
    },
 
    methods: {
       imageWithDirectLink() {
+         // if the user clicked on the "avec un lien direct" button
          this.userUpdate.mediaurl = "";
          this.directLink = !this.directLink;
          // unload input file
@@ -35,21 +37,21 @@ export default {
       },
 
       imageWithFile() {
+         // if the user clicked on the "importer depuis mon ordinateur" button
          if (this.directLink == true) {
             this.directLink = false;
          }
-
          this.imgFile = this.$refs.imgFile.value;
          this.userUpdate.file = this.$refs.imgFile.files[0];
-         // only keep the name of the file
          this.userUpdate.mediaurl = this.imgFile;
          this.imgFileShort = this.imgFile.split("\\").pop();
          document.getElementById("imageWithFile").innerHTML = this.imgFileShort;
+         // this method allows to display the file name in the input field
       },
       updateProfile() {
-         //clear errormesage
+         //clear errormessage
          this.errorMessage = "";
-         //check empty form and ingnore if empty
+         //check empty form and ignore if empty (put the old data in epmty fields)
          if (this.userUpdate.firstName == "") {
             this.userUpdate.firstName = this.$store.state.user.firstName;
          }
@@ -79,7 +81,7 @@ export default {
                this.errorMessage = "Veuillez donner le code secret ou décocher la case 'modérateur'";
                return;
             }
-            //
+            // yes i like the book
             if (this.secretInput == true && this.secretCode == "Orwell") {
                this.userUpdate.mod = 1;
             } else {
@@ -89,12 +91,14 @@ export default {
 
          this.$store.dispatch("updateUser", this.userUpdate).catch((err) => {
             this.errorMessage = err.response.data.message;
+            // we update the user in the store
          });
       },
    },
 };
 </script>
 <template>
+   <!-- it's just a basic form with a submit button -->
    <div class="flex flex-col md:w-6/12 w-full justify-center items-center">
       <div class="flex flex-col w-full m-4">
          <label for="userfirstname" class="text-gray-700 text-sm">Prénom</label>

@@ -1,6 +1,7 @@
 <script>
 import comment from "./Comment.vue";
 import NewComment from "./NewComment.vue";
+// Hello, this is a Post component.
 export default {
    name: "post",
    components: {
@@ -16,22 +17,23 @@ export default {
    },
    data() {
       return {
-         comments: null,
-
-         seeComments: false,
-         noImage: false,
-
+         seeComments: false, // show comments or not
+         noImage: false, // if there is no image in the post we don't display the image section
+         // Checkers are what we send to the server and the state and we interact with the post (there is also one in Comment.vue)
          likeChecker: {
+            // this is the checker for the like button
             postId: this.id,
             userId: this.$store.state.user.userId,
             signal: null,
          },
          reportChecker: {
+            // this is the checker for the report button
             postId: this.id,
             userId: this.$store.state.user.userId,
             signal: null,
          },
          suppressChecker: {
+            // this is the checker for the suppress button
             postId: this.id,
             signal: null,
          },
@@ -40,13 +42,18 @@ export default {
    beforeMount() {
       if (this.mediaurl == "") {
          this.noImage = true;
+         // if there is no image in the post we don't display the image section
       }
    },
    computed: {
       specifiedPost() {
          return this.$store.state.posts.filter((post) => post.id == this.id);
+         /* computing the post we want to display is not to useful because we have the post in the state and we load the data directly from it, 
+         it's just for the sake of completeness and it allows us to check directly the data of the post we are looking for in the dev mode
+         we also use it to load the comment */
       },
       isop() {
+         // check if the post is the user's post
          if (this.specifiedPost[0].op == this.$store.state.user.userId) {
             return true;
          } else {
@@ -54,19 +61,24 @@ export default {
          }
       },
       liked() {
+         // check if the post is liked by the user
          return this.$store.getters.userLikedPost(this.id);
       },
       reported() {
+         // check if the post is reported by the user
          return this.$store.getters.userReportedPost(this.id);
       },
       numLikes() {
+         // return the number of likes of the post
          return this.specifiedPost[0].liked_post.filter((liked_post) => liked_post.liked === 1).length; // get number of likes;
       },
       numComments() {
+         // return the number of comments of the post
          return this.specifiedPost[0].comment.filter((comment) => comment.enable === 1).length;
       },
    },
    created() {
+      // load the comment from this.specifiedPost[0]
       this.comments = this.specifiedPost[0].comment;
       if (this.specifiedPost[0].op == this.$store.state.user.userId) {
          this.isOp = true;
@@ -77,9 +89,11 @@ export default {
 
    methods: {
       displayComments() {
+         // you want to see the comments ?
          this.seeComments = !this.seeComments;
       },
       imageWithDirectLink() {
+         // if the user want to upload an image with a direct link
          this.newComment.mediaurl = "";
          this.directLink = !this.directLink;
          // unload input file
@@ -89,6 +103,7 @@ export default {
       },
 
       imageWithFile() {
+         // if the user want to upload an image with a file
          if (this.directLink == true) {
             this.directLink = false;
          }
@@ -100,6 +115,7 @@ export default {
          document.getElementById(this.id + "imageWithFile").innerHTML = this.imgFileShort;
       },
       like() {
+         // like the post
          if (this.liked) {
             this.likeChecker.signal = 0;
          } else {
@@ -111,6 +127,7 @@ export default {
          });
       },
       report() {
+         // report the post
          if (this.reported) {
             this.reportChecker.signal = 0;
             alert("Vous avez annulé votre signalement");
@@ -137,14 +154,14 @@ export default {
          this.$store.dispatch("supressPost", this.suppressChecker).then(() => {
             this.suppressChecker.signal = null;
          });
-         //supp the post in the store
+         // we delete the post from the state so we don't have to reload it
       },
    },
 };
 </script>
 <template>
    <!-- Example of a Post -->
-
+   <!-- same template as a comment but with a comment section where we call the comment -->
    <div v-if="visible" :id="id" class="flex flex-col lg:w-7/12 w-full justify-center items-center mb-10">
       <div class="flex flex-col h-auto border-2 w-full shadow-xl rounded-xl justify-center items-center">
          <!-- header section with the profile pic, name, workplace, report button-->
@@ -210,7 +227,7 @@ export default {
          <div
             class="flex flex-col bg-slate-400 h-auto p-2 w-10/12 border-r-2 border-l-2 border-b-2 shadow-xl rounded-b-xl justify-center items-center"
          >
-            <!-- comment section -->
+            <!-- comments section -->
             <div v-if="seeComments == true" class="flex flex-col justify-center items-center w-full h-full">
                <comment
                   v-for="comment of comments"

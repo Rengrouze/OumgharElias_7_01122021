@@ -10,6 +10,7 @@ export default {
 
    data() {
       return {
+         // form data
          newComment: {
             post: this.postId,
             op: this.$store.state.user.userId,
@@ -17,8 +18,7 @@ export default {
             mediaurl: "",
             file: "",
          },
-         noImage: true,
-         preview: "",
+         // it's nearly the same type of form data as the one in the "ModifyProfileForm" component
          message: "",
          directLink: false,
          imgFile: "", // image file name
@@ -27,9 +27,6 @@ export default {
       };
    },
    methods: {
-      displayForm() {
-         this.display = !this.display;
-      },
       imageWithDirectLink() {
          this.newComment.mediaurl = "";
          this.directLink = !this.directLink;
@@ -77,6 +74,7 @@ export default {
 };
 </script>
 <template>
+   <!-- it's a basic form with a textarea and a file input  -->
    <div class="flex flex-col p-2 border border-gray-300 rounded-xl bg-gray-50 shadow-xl mb-2 w-full justify-center items-center">
       <label for="NewComment" class="text-gray-700 text-sm">Ajouter un commentaire</label>
       <textarea

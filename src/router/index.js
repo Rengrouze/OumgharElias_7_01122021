@@ -6,21 +6,25 @@ import Moderation from "../views/Moderation.vue";
 
 const routes = [
    {
+      // Landing page
       path: "/",
       name: "Landing",
       component: Landing,
    },
    {
+      // Home page
       path: "/home",
       name: "home",
       component: Home,
    },
    {
+      // Profile page
       path: "/Profile",
       name: "Profile",
       component: Profile,
    },
    {
+      // Moderation page
       path: "/symes",
       name: "symes",
       component: Moderation,

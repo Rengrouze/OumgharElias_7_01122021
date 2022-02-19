@@ -1,4 +1,5 @@
 <template>
+   <!-- home page -->
    <div>
       <Header>
          <template v-slot:demiurge
@@ -36,8 +37,6 @@
    </div>
 </template>
 <script>
-// @ is an alias to /src
-
 import Header from "../components/Header.vue";
 import post from "../components/Post.vue";
 import NewPost from "../components/NewPost.vue";

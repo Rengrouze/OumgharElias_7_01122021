@@ -3,6 +3,8 @@ export default {
    name: "NewPost",
    data() {
       return {
+         // you remember the form data in the "ModifyProfileForm" component?
+         // it's nearly the same type of form data as the one in the "ModifyProfileForm" component
          display: false,
          newPost: {
             op: this.$store.state.user.userId,
@@ -10,8 +12,6 @@ export default {
             mediaurl: "",
             file: "",
          },
-         noImage: true,
-         preview: "",
          errorMessage: "",
          directLink: false,
          imgFile: "", // image file name
@@ -21,6 +21,7 @@ export default {
    },
    methods: {
       displayForm() {
+         // display the form on command
          this.display = !this.display;
       },
       imageWithDirectLink() {
@@ -68,6 +69,7 @@ export default {
 };
 </script>
 <template>
+   <!-- still a basic form with a submit button -->
    <div class="flex w-full items-center justify-center flex-col">
       <div
          v-if="!display"

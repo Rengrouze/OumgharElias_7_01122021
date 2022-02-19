@@ -1,4 +1,3 @@
-import { objectToString } from "@vue/shared";
 import { createStore } from "vuex";
 
 const apiUrl = "http://localhost:3003/api";
@@ -19,12 +18,14 @@ export default createStore({
    },
    getters: {
       userLikedPost: (state) => (postId) => {
+         // check if the user has liked the post
          const post = state.posts.find((post) => postId == post.id);
          const currentUserLike = post.liked_post.find((liked) => liked.user__id == state.user.userId);
          console.log(currentUserLike);
          return !!(currentUserLike ? currentUserLike.liked : 0);
       },
       userReportedPost: (state) => (postId) => {
+         // check if the user has reported the post
          const post = state.posts.find((post) => postId == post.id);
          const currentUserReport = post.reported_post.find((reported) => reported.user__id == state.user.userId);
          console.log(currentUserReport);
@@ -32,6 +33,7 @@ export default createStore({
       },
 
       reportedPosts: (state) => {
+         // get all the posts that has been reported
          return state.posts.filter((post) => post.reported_post.length > 0);
       },
    },
@@ -53,7 +55,7 @@ export default createStore({
          state.posts.find((post) => post.id == comment.post__id).comment.push(comment);
       },
       UPDATE_LIKE(state, data) {
-         // search the like array in the post
+         // search the like array in the post and directly unshift the new like
          var post = state.posts.find((post) => post.id == data.postId).liked_post.find((liked) => liked.user__id == data.userId);
          var like = data.signal;
          var user = data.userId;
@@ -72,7 +74,7 @@ export default createStore({
       },
 
       UPDATE_REPORT(state, data) {
-         // search the like array in the post
+         // search the like array in the post and directly unshift the new report (same method as the like)
          var post = state.posts.find((post) => post.id == data.postId).reported_post.find((reported) => reported.user__id == data.userId);
          var report = data.signal;
          var user = data.userId;
@@ -101,6 +103,7 @@ export default createStore({
          post.comment.splice(index, 1);
       },
       SET_USER(state, data) {
+         //set the user data in the state
          state.user.userId = data.userId;
          state.user.firstName = data.userFirstName;
          state.user.lastName = data.userLastName;
@@ -117,6 +120,7 @@ export default createStore({
          localStorage.setItem("user", JSON.stringify(state.user));
       },
       DELETE_USER(state) {
+         // called when the user logs out
          state.user.userId = null;
          state.user.firstName = "";
          state.user.lastName = "";
@@ -126,6 +130,7 @@ export default createStore({
          localStorage.removeItem("user");
       },
       UPDATE_USER(state, data) {
+         // update the user data in the state
          state.user.userId = data.userId;
          state.user.firstName = data.userFirstName;
          state.user.lastName = data.userLastName;
@@ -155,6 +160,7 @@ export default createStore({
       },
    },
    actions: {
+      //action names are explicit
       async signup({ commit }, form) {
          const response = await fetch(`${apiUrl}/auth/signup`, {
             method: "POST",
@@ -315,24 +321,6 @@ export default createStore({
          return data;
       },
 
-      async supressComment({ commit }, checker) {
-         const response = await fetch(`${apiUrl}/posts/supressComment`, {
-            method: "PUT",
-            headers: {
-               Authorization,
-               "Content-Type": "application/json",
-            },
-            body: JSON.stringify(checker),
-         });
-         const data = await response.json();
-         if (response.status !== 200) {
-            throw new Error(data.error);
-         }
-         const id = checker.commentId;
-         commit("DELETE_COMMENT", id);
-         console.log.id;
-         return data;
-      },
       async createComment({ commit }, form) {
          const formData = new FormData();
          for (const data in form) {
@@ -352,6 +340,24 @@ export default createStore({
             throw new Error(data);
          }
 
+         return data;
+      },
+      async supressComment({ commit }, checker) {
+         const response = await fetch(`${apiUrl}/posts/supressComment`, {
+            method: "PUT",
+            headers: {
+               Authorization,
+               "Content-Type": "application/json",
+            },
+            body: JSON.stringify(checker),
+         });
+         const data = await response.json();
+         if (response.status !== 200) {
+            throw new Error(data.error);
+         }
+         const id = checker.commentId;
+         commit("DELETE_COMMENT", id);
+         console.log.id;
          return data;
       },
    },

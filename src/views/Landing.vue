@@ -1,6 +1,5 @@
-<!-- Contains the feed section -->
-
 <template>
+   <!-- signup/login form  -->
    <div class="flex flex-col items-center w-10/12 xs:w-4/12 ml-auto mr-auto">
       <div class="flex flex-col items-center mt-40 w-full h-6/12">
          <div class="h-36">
@@ -74,10 +73,8 @@
 </template>
 
 <script>
-// @ is an alias to /src
-
 export default {
-   // check before created if the user is already logged in
+   // check before created if the user is already logged in, if so redirect to home
    beforeRouteEnter(to, from, next) {
       if (localStorage.getItem("user") && !localStorage.getItem("token")) {
          localStorage.removeItem("user");

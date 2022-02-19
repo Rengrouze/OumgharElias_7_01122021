@@ -4,6 +4,7 @@ export default {
 };
 </script>
 <template>
+   <!-- we display the user info here  -->
    <div class="flex items-center flex-1">
       <router-link to="/home"><slot name="userProfilePic"></slot></router-link>
 
