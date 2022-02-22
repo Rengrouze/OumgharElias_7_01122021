@@ -42,13 +42,13 @@ import post from "../components/Post.vue";
 import NewPost from "../components/NewPost.vue";
 
 export default {
-   data() {
-      return {};
-   },
    computed: {
       posts() {
          return this.$store.state.posts;
       },
+   },
+   data() {
+      return {};
    },
    created() {
       if (!this.posts) {

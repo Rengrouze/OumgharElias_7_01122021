@@ -22,7 +22,7 @@
                />
             </div>
 
-            <div class="animate-fade opacity-1" v-if="showSignupForm == true">
+            <div class="transition-all" v-if="showSignupForm == true">
                <div class="flex flex-col w-full">
                   <label for="name">Nom</label>
                   <input
@@ -61,10 +61,18 @@
             >
                Retour
             </button>
-            <button @click="login" v-if="showSignupForm == false" class="border-2 border-blue-800 bg-blue-400 text-white rounded w-32">
+            <button
+               @click="login"
+               v-if="showSignupForm == false"
+               class="border-2 border-blue-800 bg-blue-400 text-white rounded w-32 hover:bg-blue-300 transition-all"
+            >
                Connexion
             </button>
-            <button v-if="showSignupForm == true" @click="signup" class="border-2 border-blue-800 bg-blue-400 text-white rounded w-32">
+            <button
+               v-if="showSignupForm == true"
+               @click="signup"
+               class="border-2 border-blue-800 bg-blue-400 text-white rounded w-32 hover:bg-blue-300 transition-all"
+            >
                Confirmer
             </button>
          </div>

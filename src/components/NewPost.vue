@@ -74,14 +74,14 @@ export default {
       <div
          v-if="!display"
          @click="displayForm()"
-         class="flex justify-center items-center border-2 w-11 rounded-full mb-5 h-11 text-3xl cursor-pointer"
+         class="flex justify-center items-center border-2 w-11 rounded-full mb-5 h-11 text-3xl cursor-pointer hover:scale-110 transition-all active:scale-125"
       >
          +
       </div>
       <div
          v-if="display"
          @click="displayForm()"
-         class="flex justify-center items-center border-2 w-11 rounded-full mb-5 h-11 text-3xl cursor-pointer"
+         class="flex justify-center items-center border-2 w-11 rounded-full mb-5 h-11 text-3xl cursor-pointer hover:scale-110 transition-all active:scale-125"
       >
          -
       </div>

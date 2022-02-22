@@ -96,7 +96,9 @@ export default {
       },
       deleteAccount() {
          // if you want to delete your account
-         var confirmation = confirm("Voulez-vous vraiment supprimer votre compte ? Vous ne pourrez pas le récupérer");
+         var confirmation = confirm(
+            "Voulez-vous vraiment supprimer votre compte ? Tout les posts et commentaires publiés seront également supprimés et vous ne pourrez pas les récupérer."
+         );
 
          if (confirmation == true) {
             this.$store
@@ -150,7 +152,7 @@ export default {
          <div class="flex md:flex-row flex-col justify-evenly w-full">
             <button
                @click="imageWithDirectLink()"
-               class="mt-4 mb-2 border-2 border-[#2D6991] bg-[#2D6991] rounded-lg text-sky-50 p-1 cursor-pointer"
+               class="mt-4 mb-2 border-2 border-[#2D6991] bg-[#2D6991] rounded-lg text-sky-50 p-1 cursor-pointer hover:scale-105 transition-all"
             >
                Avec un lien Direct
             </button>
@@ -163,7 +165,7 @@ export default {
             />
             <label
                for="file"
-               class="mt-4 mb-2 border-2 border-[#2D6991] bg-[#2D6991] rounded-lg text-sky-50 font-normal p-1 cursor-pointer"
+               class="mt-4 mb-2 border-2 border-[#2D6991] bg-[#2D6991] rounded-lg text-sky-50 font-normal p-1 cursor-pointer hover:scale-105 transition-all"
                id="imageWithFile"
             >
                Importer depuis mon pc</label
@@ -208,13 +210,13 @@ export default {
 
          <button
             @click="updateProfile()"
-            class="mt-4 mb-2 border-2 border-[#2D6991] bg-[#2D6991] rounded-lg text-sky-50 p-1 font-bold cursor-pointer"
+            class="mt-4 mb-2 border-2 border-[#2D6991] bg-[#2D6991] rounded-lg text-sky-50 p-1 font-bold cursor-pointer hover:scale-105 transition-all"
          >
             Envoyer
          </button>
          <button
             @click="deleteAccount()"
-            class="mt-4 mb-2 border-2 border-[#b91717] bg-[#f11212] rounded-lg text-sky-50 p-1 font-bold cursor-pointer"
+            class="mt-4 mb-2 border-2 border-[#b91717] bg-[#f11212] rounded-lg text-sky-50 p-1 font-bold cursor-pointer hover:scale-105 transition-all"
          >
             Supprimer mon compte
          </button>
