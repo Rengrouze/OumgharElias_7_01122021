@@ -89,7 +89,7 @@ export default {
          <div class="flex md:flex-row flex-col justify-evenly w-full">
             <button
                @click="imageWithDirectLink()"
-               class="mt-4 mb-2 border-2 border-[#2D6991] bg-[#2D6991] rounded-lg text-sky-50 p-1 cursor-pointer"
+               class="mt-4 mb-2 border-2 border-[#2D6991] bg-[#2D6991] rounded-lg text-sky-50 p-1 cursor-pointer hover:text-white transition-all"
             >
                Avec un lien Direct
             </button>
@@ -102,7 +102,7 @@ export default {
             />
             <label
                for="file"
-               class="mt-4 mb-2 border-2 border-[#2D6991] bg-[#2D6991] rounded-lg text-sky-50 font-normal p-1 cursor-pointer"
+               class="mt-4 mb-2 border-2 border-[#2D6991] bg-[#2D6991] rounded-lg text-sky-50 font-normal p-1 cursor-pointer hover:text-white transition-all"
                :id="postId + 'imageWithFile'"
             >
                Importer depuis mon pc</label
@@ -132,7 +132,7 @@ export default {
       </p>
       <button
          @click="postNewComment()"
-         class="mt-4 mb-2 border-2 border-[#2D6991] bg-[#2D6991] rounded-lg text-sky-50 p-1 font-bold cursor-pointer"
+         class="mt-4 mb-2 border-2 border-[#2D6991] bg-[#2D6991] rounded-lg text-sky-50 p-1 font-bold cursor-pointer hover:text-white transition-all"
       >
          Envoyer
       </button>
