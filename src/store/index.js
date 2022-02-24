@@ -1,7 +1,6 @@
 import { createStore } from "vuex";
 
 const apiUrl = "http://localhost:3003/api";
-var Authorization = "token " + localStorage.getItem("token");
 
 export default createStore({
    state: {
@@ -15,6 +14,7 @@ export default createStore({
          mod: false,
       },
       posts: null,
+      token: null,
    },
    getters: {
       userLikedPost: (state) => (postId) => {
@@ -36,9 +36,15 @@ export default createStore({
          // get all the posts that has been reported
          return state.posts.filter((post) => post.reported_post.length > 0);
       },
+      Authorization: (state) => {
+         return "token " + state.token;
+      },
    },
 
    mutations: {
+      SET_TOKEN(state, token) {
+         state.token = token;
+      },
       UPDATE_POSTS(state, data) {
          state.posts = data;
       },
@@ -178,6 +184,7 @@ export default createStore({
             throw new Error(data.error);
          }
          localStorage.setItem("token", data.token);
+         commit("SET_TOKEN", data.token);
          localStorage.setItem("user", JSON.stringify(data));
          commit("SET_USER", data);
 
@@ -197,12 +204,13 @@ export default createStore({
             throw new Error(data.error);
          }
          localStorage.setItem("token", data.token);
+         commit("SET_TOKEN", data.token);
          localStorage.setItem("user", JSON.stringify(data));
          commit("SET_USER", data);
          return data;
       },
       async updateUser({ commit }, form) {
-         console.log("connard");
+         var Authorization = this.getters.Authorization;
          const formData = new FormData();
          for (const data in form) {
             formData.append(data, form[data]);
@@ -227,6 +235,7 @@ export default createStore({
          }
       },
       async deleteAccount({ commit }, user) {
+         var Authorization = this.getters.Authorization;
          const response = await fetch(`${apiUrl}/auth/delete`, {
             method: "PUT",
             headers: {
@@ -256,6 +265,7 @@ export default createStore({
       },
       async getPosts({ commit }) {
          // Appel vers API
+         var Authorization = this.getters.Authorization;
          const response = await fetch(`${apiUrl}/posts`, {
             method: "GET",
             headers: {
@@ -268,6 +278,7 @@ export default createStore({
          return data.posts;
       },
       async createPost({ commit }, form) {
+         var Authorization = this.getters.Authorization;
          const formData = new FormData();
          for (const data in form) {
             formData.append(data, form[data]);
@@ -293,6 +304,7 @@ export default createStore({
       },
 
       async like({ commit }, checker) {
+         var Authorization = this.getters.Authorization;
          const response = await fetch(`${apiUrl}/posts/like`, {
             method: "POST",
             headers: {
@@ -309,6 +321,7 @@ export default createStore({
          return data;
       },
       async report({ commit }, checker) {
+         var Authorization = this.getters.Authorization;
          const response = await fetch(`${apiUrl}/posts/report`, {
             method: "POST",
             headers: {
@@ -326,6 +339,7 @@ export default createStore({
       },
 
       async supressPost({ commit }, checker) {
+         var Authorization = this.getters.Authorization;
          const response = await fetch(`${apiUrl}/posts/supressPost`, {
             method: "PUT",
             headers: {
@@ -345,6 +359,7 @@ export default createStore({
       },
 
       async createComment({ commit }, form) {
+         var Authorization = this.getters.Authorization;
          const formData = new FormData();
          for (const data in form) {
             formData.append(data, form[data]);
@@ -366,6 +381,7 @@ export default createStore({
          return data;
       },
       async supressComment({ commit }, checker) {
+         var Authorization = this.getters.Authorization;
          const response = await fetch(`${apiUrl}/posts/supressComment`, {
             method: "PUT",
             headers: {
